@@ -2,7 +2,7 @@ import styles from '../components/home.module.css';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import StaffNavbar from '/components/StaffNavbar';
+import StaffNavbar from '/components/staffNavbar';
 import modal from '../components/Modal'
 
 import StudentModal from '../components/ModalStudent';
