@@ -24,25 +24,7 @@ export default function Register() {
 
   const [isRejectModalOpen, setRejectModalOpen] = useState(false);
 
-  const renderCell = React.useCallback((users, columnKey) => {
-    const cellValue = users[columnKey];
-
-    switch (columnKey) {
-      case "name":
-        return (
-          <User
-          description={user.email}
-          name={cellValue}
-          ></User>
-        )
-      case "status":
-        return <div className={styles['work-description']}>{cellValue}</div>;
-      case "hour":
-        return <div className={styles['work-scholarhour']}>{cellValue}</div>;
-      default:
-        return cellValue;
-    }
-  }, []);
+ 
 
   const [works, setWorks] = useState([
     {
