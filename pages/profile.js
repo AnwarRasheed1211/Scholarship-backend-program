@@ -3,7 +3,7 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import ProfileNavbar from '/components/profileNavbar';
 import styles from '../components/home.module.css'
-import {CircularProgress, Card, CardBody, CardFooter, Chip} from "@nextui-org/react";
+import { CircularProgress, Card, CardBody, CardFooter, Chip } from "@nextui-org/react";
 import CircularProgressCard from '@/components/CircleProgress';
 import { useSession } from 'next-auth/react';
 
@@ -33,7 +33,7 @@ export default function Profile() {
         { status: 'Incompleted', icon: '/not_applied.png' },
         // Add more work entries with images and status
       ],
-      
+
     },
   ]);
   React.useEffect(() => {
@@ -58,15 +58,15 @@ export default function Profile() {
             <Image src="/profile_pic.png" className={styles['profilePicture']} alt="Profile Picture" width={100} height={100} />
           </div>
           <div className={styles['profileContent']}>
-            
+
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data.user?.name}`}
+                {` ${data?.user?.name || "Name not available"}`}
               </div>
             </div>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data.user?.email}`}
+                {` ${data?.user?.email || "Email not available"}`}
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@ export default function Profile() {
         <div className={styles['detailSection']}>
           <div className={styles['topDetail']}>
             <div className={styles['hourContent']}>
-              Scholarship work hours 1/2023   
+              Scholarship work hours 1/2023
             </div>
             <div>
               <CircularProgressCard value={value} />
@@ -104,26 +104,26 @@ export default function Profile() {
             </div>
             {selectedAppliedList ? (
               <div className={styles['details-info']}>
-              <div className={styles['qualification-info']}>
-                {works[0].appliedList.map((entry, index) => (
-                  <div key={index} className={styles['work-entry']}>
-                    <div className={styles['work-image']}>
-                      <img src={works[0].image} alt={`Work ${index + 1}`} />
-                    </div>
-                    <div className={styles['work-title']}>
-                      <div>
-                      {works[0].title}
+                <div className={styles['qualification-info']}>
+                  {works[0].appliedList.map((entry, index) => (
+                    <div key={index} className={styles['work-entry']}>
+                      <div className={styles['work-image']}>
+                        <img src={works[0].image} alt={`Work ${index + 1}`} />
                       </div>
-                      <div>
-                      {works[0].hours}
+                      <div className={styles['work-title']}>
+                        <div>
+                          {works[0].title}
+                        </div>
+                        <div>
+                          {works[0].hours}
+                        </div>
+                      </div>
+                      <div className={styles['work-status']}>
+                        {entry.status}
                       </div>
                     </div>
-                    <div className={styles['work-status']}>
-                      {entry.status}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className={styles['details-info']}>
@@ -134,10 +134,10 @@ export default function Profile() {
                     </div>
                     <div className={styles['work-title']}>
                       <div>
-                      {works[0].title}
+                        {works[0].title}
                       </div>
                       <div>
-                      {works[0].hours}
+                        {works[0].hours}
                       </div>
                     </div>
                     <div className={styles['work-status']}>
