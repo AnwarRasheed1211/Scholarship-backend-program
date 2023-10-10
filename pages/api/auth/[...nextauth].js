@@ -1,80 +1,37 @@
 import NextAuth from 'next-auth';
 import AzureADProvider from 'next-auth/providers/azure-ad';
+import { connectToDatabase } from '@/lib/db';
 
-const env = process.env;
-
-async function refreshAccessToken(token) {
-  try {
-    const url = `https://login.microsoftonline.com/${env.NEXT_PUBLIC_AZURE_AD_TENANT_ID}/oauth2/v2.0/token`;
-
-    const body = new URLSearchParams({
-      client_id:
-        process.env.NEXT_PUBLIC_AZURE_AD_CLIENT_ID || 'azure-ad-client-id',
-      client_secret:
-        process.env.NEXT_PUBLIC_AZURE_AD_CLIENT_SECRET ||
-        'azure-ad-client-secret',
-      scope: 'email openid profile User.Read offline_access',
-      grant_type: 'refresh_token',
-      refresh_token: token.refreshToken,
-    });
-
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      method: 'POST',
-      body,
-    });
-
-    const refreshedTokens = await response.json();
-    if (!response.ok) {
-      throw refreshedTokens;
-    }
-
-    return {
-      ...token,
-      accessToken: refreshedTokens.id_token,
-      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
-      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
-    };
-  } catch (error) {
-    return {
-      ...token,
-      error: 'RefreshAccessTokenError',
-    };
-  }
-}
-
-export const authOptions = {
+export default NextAuth({
   providers: [
     AzureADProvider({
-      clientId: `${env.NEXT_PUBLIC_AZURE_AD_CLIENT_ID}`,
-      clientSecret: `${env.NEXT_PUBLIC_AZURE_AD_CLIENT_SECRET}`,
-      tenantId: `${env.NEXT_PUBLIC_AZURE_AD_TENANT_ID}`,
+      clientId: process.env.NEXT_PUBLIC_AZURE_AD_CLIENT_ID,
+      clientSecret: process.env.NEXT_PUBLIC_AZURE_AD_CLIENT_SECRET,
+      tenantId: process.env.NEXT_PUBLIC_AZURE_AD_TENANT_ID,
       authorization: {
-        params: { scope: 'openid email profile User.Read  offline_access' },
+        params: { scope: 'openid email profile User.Read offline_access' },
       },
       httpOptions: { timeout: 10000 },
     }),
   ],
   callbacks: {
     async jwt({ token, user, account }) {
-      // Persist the id_token, expires_at &refresh_token to the token right after signin
+      // Persist the id_token, expires_at & refresh_token to the token right after signin
       if (account && user) {
         return {
           accessToken: account.id_token,
-          accessTokenExpires: account?.expires_at
-            ? account.expires_at * 1000
-            : 0,
+          accessTokenExpires: account.expires_at * 1000, // Convert seconds to milliseconds
           refreshToken: account.refresh_token,
           user,
         };
       }
 
-      if (Date.now() < token.accessTokenExpires - 100000 || 0) {
+      // Check if the access token is expired
+      if (Date.now() < token.accessTokenExpires - 100000) {
         return token;
       }
 
+      // Refresh the access token if it has expired
       return refreshAccessToken(token);
     },
     async session({ session, token }) {
@@ -82,11 +39,25 @@ export const authOptions = {
         session.user = token.user;
         session.error = token.error;
         session.accessToken = token.accessToken;
+
+        // Fetch user-specific route from MongoDB based on the user's email
+        try {
+          const db = await connectToDatabase('scholarship');
+          const user = await db.collection('user').findOne({ email: session.user.email });
+
+          if (user && user.route) {
+            session.user.route = user.route;
+          }
+
+          // Check the user's roles and add them to the session
+          if (user && user.role) {
+            session.user.role = user.role;
+          }
+        } catch (error) {
+          console.error('Error fetching user-specific route:', error);
+        }
       }
       return session;
     },
   },
-};
-export default NextAuth(authOptions);
-
-// return refreshAccessToken(token);
+});
