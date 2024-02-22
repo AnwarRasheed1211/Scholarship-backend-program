@@ -1,19 +1,25 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const WorkSchema = new mongoose.Schema(
-  {
-    title: String,
-    description: String,
-    datetimeStartDate: String,
-    dateTimeStartTime: String,
-    datetimeEndDate: String,
-    datetimeEndTime: String,
-    scholarshipHours: String,
-    location: String,
-    qualifcations: String,
-    contacts: String,
-  },
-  { strict: false }
-);
+const workSchema = new mongoose.Schema({
+  picture: String,
+  title: String,
+  datetime: [{
+    start: Date,
+    end: Date,
+    hours: Number,
+  }],
+  location: String,
+  description: String,
+  qualification: String,
+  contacts: String,
+  studentList: [{
+    studentName: String,
+    status: String,
+  }],
+  workStatus: String,
+});
 
-export default mongoose.models.work || mongoose.model("works", WorkSchema);
+// Specify the collection name as 'work'
+const WorkModel = mongoose.models.Work || mongoose.model('Work', workSchema, 'work');
+
+export default WorkModel;

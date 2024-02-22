@@ -21,18 +21,28 @@
 }
 
 .parent-container {
-  border: 1px solid black;
-  margin: 1rem;
-  padding: 2rem 2rem;
-  text-align: center;
+  display: grid;
+  grid-template-areas: 
+    'picture descrption'
+    'dateTime dateTime ';
+  gap: 10px;
+  background-color: white;
+  padding: 10px;
 }
 
 .float-child {
-  display: inline-block;
-  border: 1px solid transparent;
-  padding: 2rem 8rem;
-  vertical-align: middle;
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px;
+  font-size: 30px;
 }
+
+.item1 { grid-area: picture;}
+.item2 { grid-area: descrption;}
+.item3 { grid-area: dateTime;}
+
+
 
 .form-container {
   color: black;
@@ -98,7 +108,7 @@
 .upload-pic {
   display: inline-block;
   border-radius: 25px;
-  padding: 200px 100px;
+  padding: 180px 40px;
   border: 1px dashed black;
   background-color: white;
   color: black;
@@ -106,14 +116,41 @@
 }
 
 .container-form {
-  display: inline-block;
-  max-width: 700px;
-  margin: auto;
-  border: 1px solid transparent;
+  display: grid;
+  gap: 50px;
+  grid-template-columns: auto auto auto;
+  background-color: white;
+  padding: 10px;
+  border-color: transparent;
+}
+
+.content-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 1px;
+  font-size: 20px;
   text-align: center;
-  padding: 50px;
-  align-items: flex-end; /* Align content to the bottom of the container */
-  border-radius: 10px;
+  border-color: transparent;
+}
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 1px;
+  font-size: 20px;
+}
+
+.item1 {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
+
+.info-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 1px;
+  font-size: 20px;
+  text-align: center;
+  border-color: transparent;
 }
 
 

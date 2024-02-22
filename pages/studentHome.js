@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import styles from '../components/home.module.css';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CreateForm from '../components/Creatework';
-
-
+import NavBar from '@/components/Navbar';
+import ApplyModal from '../components/modal-apply'; 
 
 
 
@@ -13,60 +13,113 @@ import CreateForm from '../components/Creatework';
 
 export default function Home() {
 
+  const [works, setWorks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isCreateFormVisible, setCreateFormVisible] = useState(false);
   const [selectedWork, setSelectedWork] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [selectedQualification, setSelectedQualification] = useState(null);
+  const [isApplyModalVisible, setApplyModalVisible] = useState(false);
+  const [progressStudents, setProgressStudents] = useState([]);
+  const [appliedWorks, setAppliedWorks] = useState([]);
 
-  const [works, setWorks] = useState([
-    {
-      id: 1,
-      image: '/workpost.png',
-      title: 'Work 1',
-      description: 'Work 1 Description',
-      datetimeStartDate: '2023-10-01',
-      datetimeStartTime: '09:00',
-      datetimeEndDate: '2023-10-01',
-      datetimeEndTime: '12:00',
-      scholarshipHours: '3 hours',
-      location: 'Work 1 Location',
-      qualifications: 'Qualification information 1',
-      contacts: 'Contact information 1',
-    },
-    {
-      id: 2,
-      image: '/workpost.png',
-      title: 'Work 2',
-      description: 'Work 2 Description',
-      datetimeStartDate: '2023-10-01',
-      datetimeStartTime: '09:00',
-      datetimeEndDate: '2023-10-01',
-      datetimeEndTime: '12:00',
-      scholarshipHours: '3 hours',
-      location: 'Work 2 Location',
-      qualifications: 'Qualification information 2',
-      contacts: 'Contact information 2',
-    },
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/scholarshipWork", { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await res.json();
+        setWorks(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+      }
+    };
 
-  
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleWorkClick = (workId) => {
-    const selectedWork = works.find((work) => work.id === workId);
+    const selectedWork = works.find((work) => work._id === workId);
+    console.log('Selected Work:', selectedWork);
     setSelectedWork(selectedWork);
   };
+  
+
+  const applyWork = async (workId, studentName) => {
+    console.log('Selected Work ID:', workId);
+    try {
+      console.log("Applying for work with ID:", workId); // Add this logging statement
+  
+      const res = await fetch(`/api/appliedStudents/${workId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ studentName: "New Student" }), // Pass the actual student's name here
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to apply for work');
+      }
+  
+      // Assuming the response contains the updated work with the applied student
+      const updatedWork = await res.json();
+      
+      // Update the local state with the updated work
+      setWorks((prevWorks) => prevWorks.map((work) => (work.id === workId ? updatedWork : work)));
+      setSelectedWork(updatedWork);
+      setAppliedWorks((prevAppliedWorks) => [...prevAppliedWorks, { ...updatedWork, id: workId }]);
+    } catch (error) {
+      console.error('Error applying for work:', error);
+      // Handle error
+    }
+  };
+  
+  
+  
+  
 
   const handleCloseClick = () => {
     setSelectedWork(null); // Reset selectedWork when the Close button is clicked
     setCreateFormVisible(false); // Hide create form if it's open
   };
 
+  const handleApply = (workId, studentName) => {
+    const selectedWork = works.find((work) => work.id === workId);
+    const isStudentApplied = selectedWork.studentApplied.some(
+      (student) => student.name === studentName
+    );
+
+    if (!isStudentApplied) {
+      // Make a copy of the selected work
+      const updatedWork = { ...selectedWork };
+      // Initialize studentApplied as an array if it's not already
+      updatedWork.studentApplied = updatedWork.studentApplied || [];
+      // Add the new student to the studentApplied array of the selected work
+      updatedWork.studentApplied.push({ name: "New Student", status: 'pending' });
+      // Update the state with the modified selected work
+      setWorks(
+        works.map((work) => (work.id === workId ? updatedWork : work))
+      );
+    }
+  };
+
   const toggleCreateForm = () => {
     setCreateFormVisible((prevVisible) => !prevVisible);
   };
 
+
   return (
     <>
+    <NavBar />
       <div className={styles.line} />
       <h1 className={styles['textwork']}>
         WORK
@@ -74,11 +127,19 @@ export default function Home() {
       <div className={styles['home-page']}>
         <div className={styles['works-list']}>
           <div>
-            {works.map((work) => (
-              <div key={work.id} onClick={() => handleWorkClick(work.id)} className={styles['work-item']} tabIndex="1">
-                <img src={work.image}
+            {works
+              .filter((work) => work.workStatus === "Accepted") // Display only works with "Accepted" status
+              .map((work) => (
+                <div
+                  key={work._id}
+                  onClick={() => handleWorkClick(work._id)}
+                  className={styles['work-item']}
+                  tabIndex="1"
+                >
+                <img
+                  src={work.image}
                   alt={`Image for ${work.title}`}
-                  style={{ width: '115px', height: 'auto', borderRadius: '25px' }}
+                  style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
                 />
                 <div className={styles['work-details']}>
                   <div className={styles['work-title']}>{work.title}</div>
@@ -93,43 +154,44 @@ export default function Home() {
         <div className={styles['work-details']}>
           {selectedWork ? (
             <>
-              <div className={styles['button-container']}>
-                <button className={styles['apply-button']} onClick={toggleCreateForm}>
-                  Apply
-                </button>
-                <button className={styles['close-button']} onClick={handleCloseClick}>
-                  Closed
-                </button>
+              
+              <button className={styles['close-button']} onClick={handleCloseClick}>
+                  Close
+              </button>
+              <div className={styles['work-image']}>
+                <img src={selectedWork.image}  />
               </div>
-
-              <div className={styles['selected-image']}>
-                <img src={selectedWork.image} alt={`Image for ${selectedWork.title}`} style={{ width: '115px', height: 'auto', borderRadius: '25px' }} />
-              </div>
+              
               <h2>{selectedWork.title}</h2>
-              <p>{selectedWork.location}</p>
+              <p>{selectedWork.hours}</p>
+              <p>Location: {selectedWork.location}</p>
                 
-            
+              
+              
               <div className={styles['details-info']}>
                 <h3>Date & Time Schedule</h3>
                 <ul>
-                  <li>
-                    Start Date: {selectedWork.datetimeStartDate}
-                  </li>
-                  <li>
-                    Start Time: {selectedWork.datetimeStartTime}
-                  </li>
-                  <li>
-                    End Date: {selectedWork.datetimeEndDate}
-                  </li>
-                  <li>
-                    End Time: {selectedWork.datetimeEndTime}
-                  </li>
-                  {selectedWork.scholarshipHours && (
-                    <li>
-                      Scholarship Hours: {selectedWork.scholarshipHours}
+                  {selectedWork.datetime.map((dateTime, index) => (
+                    <li key={index}>
+                      {dateTime.startDate} - {dateTime.startTime} to {dateTime.endDate} - {dateTime.endTime}
+                      {dateTime.scholarshipHours && (
+                        <span> | Scholarship Hours: {dateTime.scholarshipHours}</span>
+                      )}
                     </li>
-                  )}
+                  ))}
                 </ul>
+              </div>
+
+              <div className={styles['button-container']}>
+              <button className={styles['apply-button']} onClick={() => applyWork(selectedWork._id, "New Student")}>
+                Apply
+              </button>
+
+
+                
+                <button className={styles['share-button']} onClick={handleCloseClick}>
+                  Share
+                </button>
               </div>
 
               <div className={styles['contact-section']}>
@@ -152,7 +214,7 @@ export default function Home() {
 
                 <div className={styles['details-info']}>
                   <h3>Qualification</h3>
-                  <p>{selectedWork.qualifications}</p>
+                  <p>{selectedWork.qualification}</p>
                 </div>
 
 

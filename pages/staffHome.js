@@ -1,241 +1,159 @@
 import styles from '../components/home.module.css';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import StaffNavbar from '/components/staffNavbar';
-import modal from '../components/Modal'
-
-import StudentModal from '../components/ModalStudent';
 import DeleteModal from '../components/DeleteModal'; // Import your DeleteModal component
 
-
-import { columns, rows } from '../DB/data'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, User, Chip, Tooltip, getKeyValue, user, avatar } from "@nextui-org/react";
-
-
-const statusColorMap = {
-  accpet: "Accepted",
-  pending: "pending",
-  reject: "rejected",
-};
-
-const studentData = {
-  id: 1,
-  name: 'John Doe',
-  profile: 'Student Profile 1',
-  username: 'johndoe123',
-  email: 'johndoe@example.com',
-};
-
 export default function Home() {
-
-  const [isCreateFormVisible, setCreateFormVisible] = useState(false);
+  const [works, setWorks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedWork, setSelectedWork] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [selectedStudentApplied, setSelectedStudentApplied] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for the delete modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const [selectedStudent, setSelectedStudent] = useState(null); // Add this line to define the selectedStudent state
-
-  const [isStudentModalOpen, setStudentModalOpen] = useState(false);
-
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-
-
-  const openDeleteModal = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  // Function to close the delete modal
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-  };
-
-  const [works, setWorks] = useState([
-    {
-      id: 1,
-      image: '/workpost.png',
-      title: 'Work 1',
-      description: 'Work 1 Description',
-      datetimeStartDate: '2023-10-01',
-      datetimeStartTime: '09:00',
-      datetimeEndDate: '2023-10-01',
-      datetimeEndTime: '12:00',
-      scholarshipHours: '3 hours',
-      location: 'Work 1 Location',
-      qualifications: 'Qualification information 1',
-      contacts: 'Contact information 1',
-      studentApplied: [
-        { info: 'Anwar Rasheed' },
-      ],
-      studentProgress: [
-        { info: 'Anwar Rasheed' },
-      ],
-    },
-    {
-      id: 2,
-      image: '/workpost.png',
-      title: 'Work 2',
-      description: 'Work 2 Description',
-      datetimeStartDate: '2023-10-03',
-      datetimeStartTime: '09:00',
-      datetimeEndDate: '2023-10-04',
-      datetimeEndTime: '12:00',
-      scholarshipHours: '3 hours',
-      location: 'Work 2 Location',
-      qualifications: 'Qualification information 2',
-      contacts: 'Contact information 2',
-      studentApplied: [
-        { info: 'Kyaw Zin Thein' },
-      ],
-      studentProgress: [
-        { info: 'Kyaw Zin Thein' },
-      ],
-    },
+  const [appliedStudents, setAppliedStudents] = useState([
+    { id: 1, name: 'John Doe', status: 'pending' },
+    { id: 2, name: 'Jane Smith', status: 'pending' },
   ]);
-  
 
-  const openStudentModal = (student) => {
-    setSelectedStudent(student);
-    setStudentModalOpen(true);
+  const [progressStudents, setProgressStudents] = useState([
+    { id: 3, name: 'Mark Johnson', status: 'incomplete' },
+  ]);
+
+  const acceptStudent = (id) => {
+    // Find the student in the appliedStudents list
+    const acceptedStudent = appliedStudents.find((student) => student.id === id);
+
+    // Remove the student from the appliedStudents list
+    const updatedAppliedStudents = appliedStudents.filter((student) => student.id !== id);
+    setAppliedStudents(updatedAppliedStudents);
+
+    // Add the student to the progressStudents list with their actual name
+    setProgressStudents([...progressStudents, { id, name: acceptedStudent.name, status: 'incomplete' }]);
   };
 
-  const closeStudentModal = () => {
-    setSelectedStudent(null);
-    setStudentModalOpen(false);
+  const declineStudent = (id) => {
+    const updatedStudents = appliedStudents.filter((student) => student.id !== id);
+    setAppliedStudents(updatedStudents);
   };
 
+  const completeStudent = (id) => {
+    const updatedStudents = progressStudents.map((student) =>
+      student.id === id ? { ...student, status: 'complete' } : student
+    );
+    setProgressStudents(updatedStudents);
+  };
 
-  const renderCell = React.useCallback((users, columnKey) => {
-    const cellValue = users[columnKey];
+  const incompleteStudent = (id) => {
+    const updatedStudents = progressStudents.map((student) =>
+      student.id === id ? { ...student, status: 'incomplete' } : student
+    );
+    setProgressStudents(updatedStudents);
+  };
 
-    switch (columnKey) {
-      case "name":
-        return (
-          <User
-            description={user.email}
-            name={cellValue}
-          ></User>
-        )
-      case "status":
-        return <div className={styles['work-description']}>{cellValue}</div>;
-      case "hour":
-        return <div className={styles['work-scholarhour']}>{cellValue}</div>;
-      default:
-        return cellValue;
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/posts/scholarshipWork", { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await res.json();
+        setWorks(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-
-
   const handleWorkClick = (workId) => {
-    const selectedWork = works.find((work) => work.id === workId);
-    setSelectedWork(selectedWork);
+    setSelectedWork(works.find((work) => work._id === workId));
   };
 
   const handleDelete = (workId) => {
-    const updatedWorks = works.filter(work => work.id !== workId);
+    const updatedWorks = works.filter((work) => work._id !== workId);
     setWorks(updatedWorks);
     setSelectedWork(null);
   };
 
-  const handleCloseClick = () => {
-    setSelectedWork(null); // Reset selectedWork when the Close button is clicked
-    setCreateFormVisible(false); // Hide create form if it's open
+  const handleDeleteConfirmed = () => {
+    console.log('Deleted item:', selectedWork);
+    setIsDeleteModalOpen(false);
   };
 
-  const handleDeleteConfirmed = () => {
-    // Implement your deletion logic here
-    // For example, you can remove the selectedWork or perform an API request
-    console.log('Deleted item:', selectedWork);
-    setIsDeleteModalOpen(false); // Close the delete modal after deletion
-  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <StaffNavbar />
       <div className={styles.line} />
-      <h1 className={styles['textwork']}>
-        WORK
-      </h1>
+      <h1 className={styles['textwork']}>WORK</h1>
       <div className={styles['home-page']}>
         <div className={styles['works-list']}>
-          <div>
-            {works.map((work) => (
-              <div key={work.id} onClick={() => handleWorkClick(work.id)} className={styles['work-item']} tabIndex="1">
-                <img src={work.image}
-                  alt={`Image for ${work.title}`}
-                  style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
-                />
-                <div className={styles['work-details']}>
-                  <div className={styles['work-title']}>{work.title}</div>
-                  <div>{work.hours}</div>
-                  <div></div>
-                </div>
+          {works.map((work) => (
+            <div
+              key={work._id}
+              onClick={() => handleWorkClick(work._id)}
+              className={styles['work-item']}
+              tabIndex="1"
+            >
+              <img
+                src={work.image}
+                alt={`Image for ${work.title}`}
+                style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
+              />
+              <div className={styles['work-details']}>
+                <div className={styles['work-title']}>{work.title}</div>
+                <div>{work.scholarshipHours}</div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
         <div className={styles['vertical-line']}></div>
         <div className={styles['work-details']}>
           {selectedWork ? (
             <>
               <div className={styles['button-container']}>
-                
-                <button className={styles['delete-button']} onClick={openDeleteModal}>
-                  Delete
-                </button>
-                <DeleteModal
-                  isOpen={isDeleteModalOpen}
-                  onClose={closeDeleteModal} // Pass the correct function here
-                  onDelete={handleDeleteConfirmed}
-                />
-
-
-                <button className={styles['close-button']} onClick={handleCloseClick}>
-                  Close
-                </button>
+                <button className={styles['close-button']} onClick={() => setSelectedWork(null)}>Close</button>
               </div>
 
-              <div className={styles['selected-image']}>
-                <img src={selectedWork.image} alt={`Image for ${selectedWork.title}`} style={{ width: '100px', height: 'auto', borderRadius: '10px' }} />
+              <div className={styles['work-image']}>
+                  <img src={selectedWork.image}/>
               </div>
               <h2>{selectedWork.title}</h2>
-              <p>{selectedWork.location}</p>
-
+              <p>Location: {selectedWork.location}</p>
               <div className={styles['details-info']}>
                 <h3>Date & Time Schedule</h3>
                 <ul>
-                  <li>
-                    Start Date: {selectedWork.datetimeStartDate}
-                  </li>
-                  <li>
-                    Start Time: {selectedWork.datetimeStartTime}
-                  </li>
-                  <li>
-                    End Date: {selectedWork.datetimeEndDate}
-                  </li>
-                  <li>
-                    End Time: {selectedWork.datetimeEndTime}
-                  </li>
-                  {selectedWork.scholarshipHours && (
-                    <li>
-                      Scholarship Hours: {selectedWork.scholarshipHours}
+                  {selectedWork.datetime.map((dateTime, index) => (
+                    <li key={index}>
+                      {dateTime.start} to {dateTime.end}
+                      {dateTime.hours && (
+                        <span> | Scholarship Hours: {dateTime.hours}</span>
+                      )}
                     </li>
-                  )}
+                  ))}
                 </ul>
               </div>
-
-
+              <div className={styles['button-container']}>
+              <button className={styles['delete-button']} onClick={() => setIsDeleteModalOpen(true)}>Delete</button>
+                <DeleteModal
+                  isOpen={isDeleteModalOpen}
+                  onClose={() => setIsDeleteModalOpen(false)}
+                  onDelete={handleDeleteConfirmed}
+                />
+                <button className={styles['share-button']}>
+                  Share
+                </button>
+              </div>
               <div className={styles['contact-section']}>
                 <div className={styles['title-container']}>
                   <h3
@@ -267,142 +185,106 @@ export default function Home() {
                     Student Progress
                   </h3>
                 </div>
-
-
                 {selectedContact ? (
-                  <div className={styles['list-info']}>
-                    <div>Name</div>
-                    <div>Attendance</div>
-                    <div>Action</div>
-                    <div className={styles['first-info']}>
-                      <div className={styles['profile-box']}>
-                        <div className={styles['profile-info']}>
-                          <Image src="/profile_pic.png" className={styles['profilePicture']} alt="Profile Picture" width={50} height={50} />
-                          <p
-                            onClick={openStudentModal}
-                            style={{ cursor: 'pointer', color: 'blue' }}
-                          >
-                            {selectedWork.studentProgress[0].info}
-                          </p>
-                          <StudentModal
-                            isOpen={isStudentModalOpen}
-                            onClose={closeStudentModal}
-                            student={studentData}
-                          />
-                        </div>
+                    <div className={styles['list-info']}>
+                      <div>Name</div>
+                      <div>Status</div>
+                      <div>Action</div>
+                      <div className={styles['name-section']}>
+                        {progressStudents.map((student) => (
+                          <div key={student.id} className={styles['student-entry']}>
+                            <div>{student.name}</div>
+                            <div>{student.status}</div>
+                          </div>
+                        ))}
                       </div>
-                      <select className={styles['select-list']} name='name' id='name'>
-                        <option>Present</option>
-                        <option>Absent</option>
-                      </select>
 
-
-                      <button className={styles['confirm-button']}>Confirm</button>
-                    </div>
-                  </div>
-
-
-                ) : selectedStudentApplied ? (
-                  <div className={styles['list-info']}>
-                    <div>Name</div>
-                    <div>Response</div>
-                    <div>Action</div>
-                    <div className={styles['first-info']}>
-                      <div className={styles['profile-box']}>
-                        <div className={styles['profile-info']}>
-                          <Image src="/profile_pic.png" className={styles['profilePicture']} alt="Profile Picture" width={50} height={50} />
-                          <p
-                            onClick={openStudentModal}
-                            style={{ cursor: 'pointer', color: 'blue' }}
-                          >
-                            {selectedWork.studentProgress[0].info}
-                          </p>
-                          <StudentModal
-                            isOpen={isStudentModalOpen}
-                            onClose={closeStudentModal}
-                            student={studentData}
-                          />
-                        </div>
+                      <div className={styles['action-section']}>
+                        {progressStudents.map((student) => (
+                          <div key={student.id} className={styles['button-entry']}>
+                            <div className={styles['button-group']}>
+                              <button className={styles['accept-button']} onClick={() => completeStudent(student.id)}>
+                                Complete
+                              </button>
+                              <button className={styles['reject-button']} onClick={() => incompleteStudent(student.id)}>
+                                Incomplete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <select className={styles['select-list']} name='name' id='name'>
-                        <option>Accept</option>
-                        <option>Reject</option>
-                      </select>
-                      <button className={styles['confirm-button']}>Confirm</button>
                     </div>
-                  </div>
-                ) : (
+                  ) : selectedStudentApplied ? (
+                    <div className={styles['list-info']}>
+                      <div>Name</div>
+                      <div>Status</div>
+                      <div>Response</div>
+
+                      <div className={styles['name-section']}>
+                        {appliedStudents.map((student) => (
+                          <div key={student.id} className={styles['student-entry']}>
+                            <div>{student.name}</div>
+                            <div>{student.status}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className={styles['action-section']}>
+                        {appliedStudents.map((student) => (
+                          <div key={student.id} className={styles['button-entry']}>
+                            <div className={styles['button-group']}>
+                              <button className={styles['accept-button']} onClick={() => acceptStudent(student.id)}>
+                                Accept
+                              </button>
+                              <button className={styles['reject-button']} onClick={() => declineStudent(student.id)}>
+                                Decline
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                <div className={styles['details-info']}>
                   <div className={styles['details-info']}>
-                    <div className={styles['details-info']}>
-                      <h3>Description</h3>
-                      <p>{selectedWork.description}</p>
-                    </div>
-
-                    <div className={styles['details-info']}>
-                      <h3>Qualification</h3>
-                      <p>{selectedWork.qualifications}</p>
-                    </div>
-
-                    <div className={styles['details-info']}>
-                      <h3>Contact</h3>
-                      <p>{selectedWork.contacts}</p>
-                    </div>
+                    <h3>Description</h3>
+                    <p>{selectedWork.details}</p>
                   </div>
-                )}
-
-
-
-
-
+                  <div className={styles['details-info']}>
+                    <h3>Qualification</h3>
+                    <p>{selectedWork.qualification}</p>
+                  </div>
+                  <div className={styles['details-info']}>
+                    <h3>Contact</h3>
+                    <p>{selectedWork.contacts}</p>
+                  </div>
               </div>
-            </>
+                  )}
+            </div>
+          </>
           ) : (
             <div className={`${styles['no-works-message-s']} ${selectedWork ? styles['hidden'] : ''}`}>
               <div className={styles['approve-title']}>Approval Status List</div>
-              <Table aria-label="Example table with dynamic content" className={styles["custom-table"]}>
-                <TableHeader columns={columns}>
-                  {(column) => (
-                    <TableColumn
-                      key={column.key}
-                      width={
-                        column.key === "name"
-                          ? "20%"
-                          : column.key === "role"
-                            ? "20%"
-                            : "20%"
-                      }
-                      className={`${styles["table-column"]} ${styles["table-header"]}`} // Add a class for header styling
-                    >
-                      {column.label}
-                    </TableColumn>
-                  )}
-                </TableHeader>
-                <TableBody items={rows} className={styles["table-body"]}>
-                  {(item) => (
-                    <TableRow key={item.key}>
-                      {(columnKey) => (
-                        <TableCell
-                          width={
-                            columnKey === "name"
-                              ? "20%"
-                              : columnKey === "role"
-                                ? "20%"
-                                : "20%"
-                          }
-                          className={styles["table-cell"]}
-                        >
-                          {getKeyValue(item, columnKey)}
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+              <div className={`${styles['details-info']}`}>
+                {works.map((work, index) => (
+                  <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work.id)}>
+                    <div className={styles['work-image']}>
+                      <img src={work.image} alt={`Work ${index + 1}`} />
+                    </div>
+                    <div className={styles['work-title']}>
+                      <div>{work.title}</div>
+                      <div>{work.hours}</div>
+                    </div>
+                    <div className={styles['work-status']}>
+                      <div>{work.workStatus}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
       </div>
     </>
-
   );
 }

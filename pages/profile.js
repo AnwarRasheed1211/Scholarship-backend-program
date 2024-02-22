@@ -1,11 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useState } from 'react';
-import ProfileNavbar from '/components/profileNavbar';
+import ProfileNavbar from '../components/profileNavbar';
 import styles from '../components/home.module.css'
 import { CircularProgress, Card, CardBody, CardFooter, Chip } from "@nextui-org/react";
-import CircularProgressCard from '@/components/CircleProgress';
-import { useSession } from 'next-auth/react';
+import CircularProgressCard from '../components/CircleProgress';
 
 // Inside your component
 // ...
@@ -14,7 +13,6 @@ export default function Profile() {
   const [value, setValue] = React.useState(0);
   const [selectedAppliedList, setSelectedAppliedList] = useState(true); // Set this to true by default
   const [selectedHistory, setSelectedHistory] = useState(false);
-  const { data, status } = useSession();
 
   const [works, setWorks] = useState([
     {
@@ -30,12 +28,14 @@ export default function Profile() {
       ],
       history: [
         { status: 'Completed', icon: '/completed.png' },
-        { status: 'Incompleted', icon: '/not_applied.png' },
+        { status: 'In Progress', icon: '/in_progress.png' },
+        { status: 'Imcompleted', icon: '/not_applied.png' },
         // Add more work entries with images and status
       ],
 
     },
   ]);
+
   React.useEffect(() => {
     const interval = setInterval(() => {
       setValue((v) => (v >= 100 ? 0 : v + 10));
@@ -43,7 +43,6 @@ export default function Profile() {
 
     return () => clearInterval(interval);
   }, []);
-
 
   return (
     <>
@@ -55,19 +54,22 @@ export default function Profile() {
       <div className={styles['home-page']}>
         <div className={styles['profileSection']}>
           <div className={styles['profilePictureContainer']}>
-            <Image src="/profile_pic.png" className={styles['profilePicture']} alt="Profile Picture" width={100} height={100} />
+            <img
+              className={styles['profilePicture']}
+              src="/profile_pic.png"
+              alt="Profile Picture"
+              width="200"
+              height="200"
+            />
           </div>
           <div className={styles['profileContent']}>
-
+            <div>Anwar Rasheed</div>
+            <div>6228105</div>
             <div className={styles['infoBox']}>
-              <div className={styles['infoTitle']}>
-                {` ${data?.user?.name || "Name not available"}`}
-              </div>
+              <div className={styles['infoTitle']}>Faculty</div>
             </div>
             <div className={styles['infoBox']}>
-              <div className={styles['infoTitle']}>
-                {` ${data?.user?.email || "Email not available"}`}
-              </div>
+              <div className={styles['infoTitle']}>Email</div>
             </div>
           </div>
         </div>
@@ -89,6 +91,7 @@ export default function Profile() {
                   setSelectedAppliedList(true);
                   setSelectedHistory(false);
                 }}
+
               >
                 Applied List
               </h3>
@@ -103,30 +106,32 @@ export default function Profile() {
               </h3>
             </div>
             {selectedAppliedList ? (
-              <div className={styles['details-info']}>
-                <div className={styles['qualification-info']}>
-                  {works[0].appliedList.map((entry, index) => (
-                    <div key={index} className={styles['work-entry']}>
-                      <div className={styles['work-image']}>
-                        <img src={works[0].image} alt={`Work ${index + 1}`} />
+              <div className={styles['qualification-info']}>
+
+                {works[0].appliedList.map((entry, index) => (
+                  <div key={index} className={styles['work-entry']}>
+                    <div className={styles['work-image']}>
+                      <img src={works[0].image} alt={`Work ${index + 1}`} />
+                    </div>
+                    <div className={styles['work-title']}>
+                      <div>
+
+                        {works[0].title}
                       </div>
-                      <div className={styles['work-title']}>
-                        <div>
-                          {works[0].title}
-                        </div>
-                        <div>
-                          {works[0].hours}
-                        </div>
-                      </div>
-                      <div className={styles['work-status']}>
-                        {entry.status}
+                      <div>
+                        {works[0].hours}
                       </div>
                     </div>
-                  ))}
-                </div>
+                    <div className={styles['work-status']}>
+                      {entry.status}
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
+
               <div className={styles['details-info']}>
+
                 {works[0].history.map((entry, index) => (
                   <div key={index} className={styles['work-entry']}>
                     <div className={styles['work-image']}>

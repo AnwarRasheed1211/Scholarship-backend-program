@@ -1,40 +1,54 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
-import axios from 'axios'; // Import Axios for making HTTP requests
+import React, { useEffect, useState } from 'react';
 import styles from '../styles/Create.module.css';
 import CreateNavBar from '/components/createNavbar';
-import { useRouter } from 'next/router';
+import { set } from 'mongoose';
 
 export default function Create() {
 
+  
+
+  const url = "http://localhost:3000/api/posts/scholarshipWork";
+
   const [formData, setFormData] = useState({
     picture: null,
-    title: '',
-    datetimeStartDate: '',
-    datetimeStartTime: '',
-    datetimeEndDate: '',
-    datetimeEndTime: '',
-    scholarshipHours: '',
-    location: '',
-    details: '',
-    qualification: '',
-    contacts: '',
+    title: "",
+    datetime: [{ startDate: "", endDate: "", workingHours: "" }], // Initialize with one empty date-time field
+    location: "",
+    description: "",
+    qualification: "",
+    contacts: "",
   });
-  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    try {
-      // Send a POST request to your Next.js API route
-      const response = await axios.post('/api/scholarshipWork', formData);
-  
-      // Optionally, you can handle success or display a message to the user
-      console.log('Response from server:', response.data);
-    } catch (error) {
-      console.error('Error posting data:', error);
-    }
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    console.log(data);
+
   };
+
+
+  const handlePictureChange = (event) => {
+    const file = event.target.files[0];
+
+    // Create a new FormData object and append the file
+    const formDataObject = new FormData();
+    formDataObject.append('picture', file);
+
+    setFormData((prevData) => ({
+      ...prevData,
+      picture: formDataObject, // Set the entire FormData object for the picture
+    }));
+  };
+
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -44,15 +58,34 @@ export default function Create() {
     }));
   };
 
-  const handlePictureChange = (event) => {
-    const file = event.target.files[0]; // Get the first selected file (if multiple files are allowed)
-
-    // You can store the file in the form data or handle it as needed.
+  const addDateTime = () => {
     setFormData((prevData) => ({
       ...prevData,
-      picture: file,
+      datetime: [...prevData.datetime, { start: '', end: '', hours: '' }],
     }));
   };
+
+  const removeDateTime = (index) => {
+    const newDateTime = [...formData.datetime];
+    newDateTime.splice(index, 1);
+    setFormData((prevData) => ({
+      ...prevData,
+      datetime: newDateTime,
+    }));
+  };
+
+  const handleDateTimeChange = (index, field, value) => {
+    const newDateTime = [...formData.datetime];
+    newDateTime[index][field] = value;
+    setFormData((prevData) => ({
+      ...prevData,
+      datetime: newDateTime,
+    }));
+  };
+
+
+
+
 
   return (
     <>
@@ -61,7 +94,7 @@ export default function Create() {
         <h2 className={styles['create-text']}>
           Create Scholarship Work
         </h2>
-        <div className={styles['praent=-container']}>
+        <div className={styles['parent-container']}>
           <div className={styles['float-child']}>
             <div className={styles['upload-pic']}>
               <label htmlFor="picture">Upload Picture</label>
@@ -79,7 +112,7 @@ export default function Create() {
             <div className={styles['form-container']}>
               <form onSubmit={handleSubmit} className={styles['create-form']}>
                 <div className={styles['form-column']}>
-                  <div className={styles['container-form']}>
+                  <div class="item3"className={styles['container-form']}>
                     <label htmlFor="title">Title</label>
                     <input
                       type="text"
@@ -90,55 +123,7 @@ export default function Create() {
                       required
                     />
 
-                    <label htmlFor="datetimeStartDate">Start Date</label>
-                    <input
-                      type="date"
-                      id="datetimeStartDate"
-                      name="datetimeStartDate"
-                      value={formData.datetimeStartDate}
-                      onChange={handleChange}
-                      required
-                    />
 
-                    <label htmlFor="datetimeStartTime">Start Time</label>
-                    <input
-                      type="time"
-                      id="datetimeStartTime"
-                      name="datetimeStartTime"
-                      value={formData.datetimeStartTime}
-                      onChange={handleChange}
-                      required
-                    />
-
-                    <label htmlFor="datetimeEndDate">End Date</label>
-                    <input
-                      type="date"
-                      id="datetimeEndDate"
-                      name="datetimeEndDate"
-                      value={formData.datetimeEndDate}
-                      onChange={handleChange}
-                      required
-                    />
-
-                    <label htmlFor="datetimeEndTime">End Time</label>
-                    <input
-                      type="time"
-                      id="datetimeEndTime"
-                      name="datetimeEndTime"
-                      value={formData.datetimeEndTime}
-                      onChange={handleChange}
-                      required
-                    />
-
-                    <label htmlFor="scholarshipHours">Scholarship Hours</label>
-                    <input
-                      type="number"
-                      id="scholarshipHours"
-                      name="scholarshipHours"
-                      value={formData.scholarshipHours}
-                      onChange={handleChange}
-                      required
-                    />
 
                     <label htmlFor="location">Location of Work</label>
                     <input
@@ -150,11 +135,11 @@ export default function Create() {
                       required
                     />
 
-                    <label htmlFor="details">Description</label>
+                    <label htmlFor="description">Description</label>
                     <textarea
-                      id="details"
-                      name="details"
-                      value={formData.details}
+                      id="description"
+                      name="description"
+                      value={formData.description}
                       onChange={handleChange}
                       rows="4"
                       cols="30"
@@ -183,10 +168,63 @@ export default function Create() {
                       required
                     ></textarea>
                   </div>
-                  <div className={styles['form-button-container']}>
-                    <input type="submit" value="Submit" />
+                </div>
+              </form>
+            </div>
+          </div>
+          <div className={styles['float-child']}>
+            <div className={styles['form-container']}>
+              <form class="item3" onSubmit={handleSubmit} className={styles['create-form']}>
+                <div className={styles['form-column']}>
+                  <div  className={styles['container-form']}>
+                    {formData.datetime.map((dateTime, index) => (
+                      <div key={index}>
+                        <label htmlFor={`start${index}`}>Start Date and Time of Work {index + 1}</label>
+                        <input
+                          type="datetime-local"
+                          id={`start${index}`}
+                          name={`start${index}`}
+                          value={dateTime.start}
+                          onChange={(e) => handleDateTimeChange(index, 'startDate', e.target.value)}
+                          required
+                        />
+
+                        <label htmlFor={`end${index}`}>End Date and Time of Work {index + 1}</label>
+                        <input
+                          type="datetime-local"
+                          id={`end${index}`}
+                          name={`end${index}`}
+                          value={dateTime.end}
+                          onChange={(e) => handleDateTimeChange(index, 'endDate', e.target.value)}
+                          required
+                        />
+
+                        <label htmlFor={`hours${index}`}>Scholarship Hours for Work {index + 1}</label>
+                        <input
+                          type="number"
+                          id={`hours${index}`}
+                          name={`hours${index}`}
+                          value={dateTime.hours}
+                          onChange={(e) => handleDateTimeChange(index, 'workingHours', e.target.value)}
+                          required
+                        />
+
+                        <button className={styles['remove-box']} type="button" onClick={() => removeDateTime(index)}>
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    <div>
+                      <button className={styles['datetime-box']} type="button" onClick={addDateTime}>
+                        Add Date and Time
+                      </button>
+                    </div>
+                    
                   </div>
                 </div>
+                <div className={styles['form-button-container']}>
+                    <input type="submit" value="Submit" />
+                  </div>
               </form>
             </div>
           </div>
