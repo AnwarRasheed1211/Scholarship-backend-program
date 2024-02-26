@@ -26,14 +26,12 @@
 
 .login-container {
   max-width: 400px;
-  padding: 20px;
+  padding: 40px;
   background-color: #fefefe;
   border-radius: 4px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Horizontally center the content */
-  align-items: center; /* Vertically center the content */
 }
 
 .input-group {
@@ -41,12 +39,16 @@
   align-items: center; /* Align label and input vertically */
 }
 
+.input-color {
+  background-color: white;
+}
+
 .form-group {
   margin-bottom: 15px;
 }
 
 .loginbutton {
-  padding: 10px 80px;
+  padding: 10px 10px;
   background-color: #3e4854; /* Change this color to your desired button color */
   color: white;
   border: none;
@@ -82,13 +84,15 @@
 
 .login-heading {
   color: black;
-  margin-left: 10px;
+  margin-left: 5px;
   display: flex;
+  font-size: large;
 }
 
 .login-content {
   display: flex;
   align-items: center; /* Align items vertically in the center */
+  margin-bottom: 20px;
 }
 
 .logo-image {
@@ -97,9 +101,4 @@
 
 .login-heading-container {
   flex: 1; /* Allow the container to expand and push the text to the right */
-}
-
-.custom-h2 {
-  color: black;
-  font-family:"Inter", sans-serif; /* Change "Arial" to the desired font-family */
 }

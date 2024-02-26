@@ -183,6 +183,13 @@
 
 }
 
+.approve-title {
+  font-size: 30px;
+  text-align: center;
+  display: flex; /* Use flexbox for vertical alignment */
+  justify-content: center; /* Center horizontally */
+  align-items: flex-start; /* Align text to the top vertically */
+}
 
 /* Center the content horizontally and vertically */
 .no-works-message {
@@ -201,22 +208,14 @@
   margin-bottom: 20px; /* Add margin to space it from the text */
 }
 
-.approve-title {
-  font-size: 30px;
-  margin-bottom: 20px;
-  text-align: center;
-  display: flex; /* Use flexbox for vertical alignment */
-  justify-content: center; /* Center horizontally */
-  align-items: flex-start; /* Align text to the top vertically */
-}
 
 /* Table styling */
 /* Add this CSS to your styles */
 .custom-table {
   border-collapse: collapse; /* Collapse the table borders */
-  width: 60%;
-  margin: 0 auto;
- 
+  width: 700%;
+  text-align: center;
+  align-items: center;
 }
 
 .table-header {
@@ -232,6 +231,9 @@
 
 .table-cell {
   padding: 20px;
+  width: auto;
+  align-items: center;
+  text-align: center;
   /*border-right: 1px solid #ddd; /* Add right border to cells */
   /*border-bottom: 1px solid #ddd; /* Add bottom border to cells */
 }
