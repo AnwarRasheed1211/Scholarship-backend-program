@@ -12,11 +12,13 @@ export default function Create() {
   const [formData, setFormData] = useState({
     picture: null,
     title: "",
-    datetime: [{ startDate: "", endDate: "", workingHours: "" }], // Initialize with one empty date-time field
+    datetime: [{ start: "", end: "", hours: "" }], // Initialize with one empty date-time field
     location: "",
-    description: "",
+    details: "",
     qualification: "",
     contacts: "",
+    studentList: [{ studentname: "", status: "" }],
+    workStatus: "Pending",
   });
 
   const handleSubmit = async (event) => {
