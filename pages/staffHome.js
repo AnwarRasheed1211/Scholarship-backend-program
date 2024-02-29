@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import StaffNavbar from '/components/staffNavbar';
 import DeleteModal from '../components/DeleteModal'; // Import your DeleteModal component
 
-import { ShareButton } from 'react-facebook';
 
 import { SessionProvider } from 'next-auth/react';
 import Head from 'next/head';
