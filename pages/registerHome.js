@@ -38,7 +38,7 @@ export default function Register() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/scholarshipWork", { cache: "no-store" });
+        const res = await fetch("/api/posts/scholarshipWork", { cache: "no-store" });
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -151,7 +151,7 @@ const handleAccept = () => {
                 tabIndex="1"
               >
               <img
-                src={work.image}
+                src={work.picture}
                 alt={`Image for ${work.title}`}
                 style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
               />
@@ -186,7 +186,7 @@ const handleAccept = () => {
               </div>
 
               <div className={styles['work-image']}>
-                  <img src={selectedWork.image}/>
+                  <img src={selectedWork.picture}/>
               </div>
               <h2>{selectedWork.title}</h2>
               <p>{selectedWork.description}</p>
@@ -196,9 +196,9 @@ const handleAccept = () => {
                 <ul>
                   {selectedWork.datetime.map((dateTime, index) => (
                     <li key={index}>
-                      {dateTime.startDate} - {dateTime.startTime} to {dateTime.endDate} - {dateTime.endTime}
-                      {dateTime.workingHours && (
-                        <span> | Scholarship Hours: {dateTime.workingHours}</span>
+                      {dateTime.start} to {dateTime.end}
+                      {dateTime.hours&& (
+                        <span> | Scholarship Hours: {dateTime.hours}</span>
                       )}
                     </li>
                   ))}
@@ -219,7 +219,7 @@ const handleAccept = () => {
                 
                 <div className={styles['details-info']}>
                   <h3>Description</h3>
-                  <p>{selectedWork.description}</p>
+                  <p>{selectedWork.details}</p>
                 </div>
 
                 <div className={styles['details-info']}>
@@ -238,7 +238,7 @@ const handleAccept = () => {
               <div className={styles['approve-title']}>Approval Status List</div>
               <div className={`${styles['details-info']}`}>
                 {works.map((work, index) => (
-                  <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work.id)}>
+                  <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                     <div className={styles['work-image']}>
                       <img src={work.image} alt={`Work ${index + 1}`} />
                     </div>

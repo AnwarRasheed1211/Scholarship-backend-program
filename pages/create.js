@@ -5,6 +5,7 @@ import { set } from 'mongoose';
 
 export default function Create() {
 
+  const [image, setImage] = useState(null);
   
 
   const url = "http://localhost:3000/api/posts/scholarshipWork";
@@ -20,6 +21,30 @@ export default function Create() {
     studentList: [{ studentname: "", status: "" }],
     workStatus: "Pending",
   });
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('image', image);
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (response.ok) {
+        console.log('Image uploaded successfully!');
+      } else {
+        console.error('Failed to upload image.');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -100,13 +125,9 @@ export default function Create() {
           <div className={styles['float-child']}>
             <div className={styles['upload-pic']}>
               <label htmlFor="picture">Upload Picture</label>
-              <input
-                type="file"
-                id="picture"
-                name="picture"
-                accept="image/*"
-                onChange={handlePictureChange}
-              />
+              <form onSubmit={handleFormSubmit}>
+                <input type="file" accept="image/*" onChange={handleImageChange} />
+              </form>
             </div>
           </div>
 
@@ -137,11 +158,11 @@ export default function Create() {
                       required
                     />
 
-                    <label htmlFor="description">Description</label>
+                    <label htmlFor="details">Description</label>
                     <textarea
-                      id="description"
-                      name="description"
-                      value={formData.description}
+                      id="details"
+                      name="details"
+                      value={formData.details}
                       onChange={handleChange}
                       rows="4"
                       cols="30"
@@ -176,9 +197,9 @@ export default function Create() {
           </div>
           <div className={styles['float-child']}>
             <div className={styles['form-container']}>
-              <form class="item3" onSubmit={handleSubmit} className={styles['create-form']}>
+              <form onSubmit={handleSubmit} className={styles['create-form']}>
                 <div className={styles['form-column']}>
-                  <div  className={styles['container-form']}>
+                  <div class="item3" className={styles['container-form']}>
                     {formData.datetime.map((dateTime, index) => (
                       <div key={index}>
                         <label htmlFor={`start${index}`}>Start Date and Time of Work {index + 1}</label>
@@ -187,7 +208,7 @@ export default function Create() {
                           id={`start${index}`}
                           name={`start${index}`}
                           value={dateTime.start}
-                          onChange={(e) => handleDateTimeChange(index, 'startDate', e.target.value)}
+                          onChange={(e) => handleDateTimeChange(index, 'start', e.target.value)}
                           required
                         />
 
@@ -197,7 +218,7 @@ export default function Create() {
                           id={`end${index}`}
                           name={`end${index}`}
                           value={dateTime.end}
-                          onChange={(e) => handleDateTimeChange(index, 'endDate', e.target.value)}
+                          onChange={(e) => handleDateTimeChange(index, 'end', e.target.value)}
                           required
                         />
 
@@ -207,7 +228,7 @@ export default function Create() {
                           id={`hours${index}`}
                           name={`hours${index}`}
                           value={dateTime.hours}
-                          onChange={(e) => handleDateTimeChange(index, 'workingHours', e.target.value)}
+                          onChange={(e) => handleDateTimeChange(index, 'hours', e.target.value)}
                           required
                         />
 

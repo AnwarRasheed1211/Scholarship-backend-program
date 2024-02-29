@@ -3,9 +3,8 @@ import styles from '../components/home.module.css';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import CreateForm from '../components/Creatework';
-import NavBar from '@/components/Navbar';
-
-
+import NavBar from '../components/Navbar'; 
+import { useSession } from 'next-auth/react';
 
 
 
@@ -20,13 +19,12 @@ export default function Home() {
   const [selectedContact, setSelectedContact] = useState(null);
   const [selectedQualification, setSelectedQualification] = useState(null);
   const [isApplyModalVisible, setApplyModalVisible] = useState(false);
-  const [progressStudents, setProgressStudents] = useState([]);
-  const [appliedWorks, setAppliedWorks] = useState([]);
+  const { data, status } = useSession();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/scholarshipWork", { cache: "no-store" });
+        const res = await fetch("/api/posts/scholarshipWork", { cache: "no-store" });
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -52,36 +50,35 @@ export default function Home() {
     setSelectedWork(selectedWork);
   };
   
+  const url = "http://localhost:3000/api/posts/scholarshipWork";
+  
+
+
 
   const applyWork = async (workId, studentName) => {
-    console.log('Selected Work ID:', workId);
     try {
-      console.log("Applying for work with ID:", workId); // Add this logging statement
-  
-      const res = await fetch(`/api/appliedStudents/${workId}`, {
-        method: 'POST',
+      const response = await fetch(`/api/scholarshipWork/${workId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ studentName: "New Student" }), // Pass the actual student's name here
+        body: JSON.stringify({ username: studentName }),
       });
-      
-      if (!res.ok) {
-        throw new Error('Failed to apply for work');
-      }
   
-      // Assuming the response contains the updated work with the applied student
-      const updatedWork = await res.json();
-      
-      // Update the local state with the updated work
-      setWorks((prevWorks) => prevWorks.map((work) => (work.id === workId ? updatedWork : work)));
-      setSelectedWork(updatedWork);
-      setAppliedWorks((prevAppliedWorks) => [...prevAppliedWorks, { ...updatedWork, id: workId }]);
+      if (response.ok) {
+        console.log('Student added successfully');
+        // Reload works after applying
+        const updatedWorks = await (await fetch("/api/scholarshipWork", { cache: "no-store" })).json();
+        setWorks(updatedWorks);
+      } else {
+        console.error('Failed to add student');
+      }
     } catch (error) {
       console.error('Error applying for work:', error);
-      // Handle error
     }
   };
+  
+  
   
   
   
@@ -92,25 +89,7 @@ export default function Home() {
     setCreateFormVisible(false); // Hide create form if it's open
   };
 
-  const handleApply = (workId, studentName) => {
-    const selectedWork = works.find((work) => work.id === workId);
-    const isStudentApplied = selectedWork.studentApplied.some(
-      (student) => student.name === studentName
-    );
-
-    if (!isStudentApplied) {
-      // Make a copy of the selected work
-      const updatedWork = { ...selectedWork };
-      // Initialize studentApplied as an array if it's not already
-      updatedWork.studentApplied = updatedWork.studentApplied || [];
-      // Add the new student to the studentApplied array of the selected work
-      updatedWork.studentApplied.push({ name: "New Student", status: 'pending' });
-      // Update the state with the modified selected work
-      setWorks(
-        works.map((work) => (work.id === workId ? updatedWork : work))
-      );
-    }
-  };
+  
 
   const toggleCreateForm = () => {
     setCreateFormVisible((prevVisible) => !prevVisible);
@@ -137,7 +116,7 @@ export default function Home() {
                   tabIndex="1"
                 >
                 <img
-                  src={work.image}
+                  src={work.picture}
                   alt={`Image for ${work.title}`}
                   style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
                 />
@@ -159,7 +138,7 @@ export default function Home() {
                   Close
               </button>
               <div className={styles['work-image']}>
-                <img src={selectedWork.image}  />
+                <img src={selectedWork.picture}  />
               </div>
               
               <h2>{selectedWork.title}</h2>
@@ -173,9 +152,9 @@ export default function Home() {
                 <ul>
                   {selectedWork.datetime.map((dateTime, index) => (
                     <li key={index}>
-                      {dateTime.startDate} - {dateTime.startTime} to {dateTime.endDate} - {dateTime.endTime}
-                      {dateTime.scholarshipHours && (
-                        <span> | Scholarship Hours: {dateTime.scholarshipHours}</span>
+                      {dateTime.start} to {dateTime.end}
+                      {dateTime.hours&& (
+                        <span> | Scholarship Hours: {dateTime.hours}</span>
                       )}
                     </li>
                   ))}
@@ -183,15 +162,9 @@ export default function Home() {
               </div>
 
               <div className={styles['button-container']}>
-              <button className={styles['apply-button']} onClick={() => applyWork(selectedWork._id, "New Student")}>
+              <button className={styles['apply-button']} onClick={() => applyWork(selectedWork._id)}>
                 Apply
               </button>
-
-
-                
-                <button className={styles['share-button']} onClick={handleCloseClick}>
-                  Share
-                </button>
               </div>
 
               <div className={styles['contact-section']}>
@@ -209,7 +182,7 @@ export default function Home() {
 
                 <div className={styles['details-info']}>
                   <h3>Description</h3>
-                  <p>{selectedWork.description}</p>
+                  <p>{selectedWork.details}</p>
                 </div>
 
                 <div className={styles['details-info']}>
@@ -226,15 +199,46 @@ export default function Home() {
 
             </>
           ) : (
-            <div className={styles['no-works-message']} >
-              <img
-                src="/workposter.png"
-                alt="No Works"
-                className={styles['no-works-image']
-                }
-              />
-              <h3 >There are scholarship works</h3>
-              <p>Select work for seeing more detail</p>
+            <div className={`${styles['no-works-message-s']} ${selectedWork ? styles['hidden'] : ''}`}>
+              <div className={styles['approve-title']}>Work Status</div>
+              <div className={`${styles['details-info']}`}>
+                {works
+                .filter((work) => work.workStatus === "Accepted") // Display only works with "Accepted" status
+                .map((work) => (
+                  <div key={work.id} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
+                    <div className={styles['work-image']}>
+                      <img src={work.picture} alt={`Work ${work.id}`} />
+                    </div>
+                    <div className={styles['work-title']}>
+                    <h3>
+                      {work.title}
+                      </h3>
+                      <div className={styles['unbold']} >
+                        {work.datetime.map((dateTime, idx) => (
+                          <li key={idx}>
+                            {dateTime.startDate} {dateTime.startTime} to {dateTime.endDate} {dateTime.endTime}
+                            {dateTime.workingHours && (
+                              <span> | Scholarship Hours: {dateTime.workingHours}</span>
+                            )}
+                          </li>
+                        ))}
+                      </div>
+                      <div>
+                      Location: {work.location}
+                      </div>
+                    </div>
+                    <div className={styles['work-status']}>
+                      <div>{work.studentList.map((dateTime, idx) => (
+                          <div key={idx}>
+                            {dateTime.status && (
+                              <span>{dateTime.status}</span>
+                            )}
+                          </div>
+                        ))}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

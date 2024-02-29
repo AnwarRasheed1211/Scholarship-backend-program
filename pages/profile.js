@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import React, { useState } from 'react';
-import ProfileNavbar from '../components/profileNavbar';
+import React, { useState, useEffect } from 'react';
+import ProfileNavbar from '/components/profileNavbar';
 import styles from '../components/home.module.css'
-import { CircularProgress, Card, CardBody, CardFooter, Chip } from "@nextui-org/react";
-import CircularProgressCard from '../components/CircleProgress';
+import { useSession } from 'next-auth/react';
 
 // Inside your component
 // ...
@@ -13,6 +12,20 @@ export default function Profile() {
   const [value, setValue] = React.useState(0);
   const [selectedAppliedList, setSelectedAppliedList] = useState(true); // Set this to true by default
   const [selectedHistory, setSelectedHistory] = useState(false);
+  const [selectedSemester, setSelectedSemester] = useState('1/2022'); // Default to the first term
+  const { data, status } = useSession();
+
+
+  const [semesters, setSemesters] = useState([
+    {
+      term: '1/2022',
+      totalHours: 60,
+    },
+    {
+      term: '2/2022',
+      totalHours: 20,
+    }
+  ])
 
   const [works, setWorks] = useState([
     {
@@ -28,21 +41,17 @@ export default function Profile() {
       ],
       history: [
         { status: 'Completed', icon: '/completed.png' },
-        { status: 'In Progress', icon: '/in_progress.png' },
-        { status: 'Imcompleted', icon: '/not_applied.png' },
+        { status: 'Incdomplete', icon: '/not_applied.png' },
         // Add more work entries with images and status
       ],
-
+      
     },
   ]);
 
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setValue((v) => (v >= 100 ? 0 : v + 10));
-    }, 500);
+  const selectedSemesterData = semesters.find((semester) => semester.term === selectedSemester);
+  const totalHours = selectedSemesterData ? selectedSemesterData.totalHours : 0;
+  
 
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <>
@@ -54,34 +63,44 @@ export default function Profile() {
       <div className={styles['home-page']}>
         <div className={styles['profileSection']}>
           <div className={styles['profilePictureContainer']}>
-            <img
-              className={styles['profilePicture']}
-              src="/profile_pic.png"
-              alt="Profile Picture"
-              width="200"
-              height="200"
-            />
+            <Image src="/profile_pic.png" className={styles['profilePicture']} alt="Profile Picture" width={100} height={100} />
           </div>
           <div className={styles['profileContent']}>
-            <div>Anwar Rasheed</div>
-            <div>6228105</div>
+            
             <div className={styles['infoBox']}>
-              <div className={styles['infoTitle']}>Faculty</div>
+              <div className={styles['infoTitle']}>
+              {` ${data.user?.name}`}
+              </div>
             </div>
             <div className={styles['infoBox']}>
-              <div className={styles['infoTitle']}>Email</div>
+              <div className={styles['infoTitle']}>
+              {` ${data.user?.email}`}
+              </div>
             </div>
           </div>
         </div>
         <table className={styles['box']}></table>
         <div className={styles['detailSection']}>
           <div className={styles['topDetail']}>
-            <div className={styles['hourContent']}>
-              Scholarship work hours 1/2023
+          <div className={styles['title-container']}>
+              <label htmlFor="semester">Select Semester:</label>
+              <select
+                id="semester"
+                onChange={(e) => setSelectedSemester(e.target.value)}
+                value={selectedSemester}
+              >
+                {semesters.map((semester) => (
+                  <option key={semester.term} value={semester.term}>
+                    {semester.term}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div>
-              <CircularProgressCard value={value} />
-            </div>
+            {selectedSemesterData && (
+              <div className={styles['hourContent']}>
+                Scholarship work hours: {selectedSemesterData.totalHours}
+              </div>
+            )}
           </div>
           <div className={styles['bottomDetail']}>
             <div className={styles['title-container']}>
@@ -91,7 +110,6 @@ export default function Profile() {
                   setSelectedAppliedList(true);
                   setSelectedHistory(false);
                 }}
-
               >
                 Applied List
               </h3>
@@ -106,8 +124,8 @@ export default function Profile() {
               </h3>
             </div>
             {selectedAppliedList ? (
+              <div className={styles['details-info']}>
               <div className={styles['qualification-info']}>
-
                 {works[0].appliedList.map((entry, index) => (
                   <div key={index} className={styles['work-entry']}>
                     <div className={styles['work-image']}>
@@ -115,11 +133,10 @@ export default function Profile() {
                     </div>
                     <div className={styles['work-title']}>
                       <div>
-
-                        {works[0].title}
+                      {works[0].title}
                       </div>
                       <div>
-                        {works[0].hours}
+                      {works[0].hours}
                       </div>
                     </div>
                     <div className={styles['work-status']}>
@@ -128,10 +145,9 @@ export default function Profile() {
                   </div>
                 ))}
               </div>
+              </div>
             ) : (
-
               <div className={styles['details-info']}>
-
                 {works[0].history.map((entry, index) => (
                   <div key={index} className={styles['work-entry']}>
                     <div className={styles['work-image']}>
@@ -139,10 +155,10 @@ export default function Profile() {
                     </div>
                     <div className={styles['work-title']}>
                       <div>
-                        {works[0].title}
+                      {works[0].title}
                       </div>
                       <div>
-                        {works[0].hours}
+                      {works[0].hours}
                       </div>
                     </div>
                     <div className={styles['work-status']}>

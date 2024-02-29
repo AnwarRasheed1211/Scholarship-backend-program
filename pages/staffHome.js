@@ -5,6 +5,13 @@ import { useRouter } from 'next/router';
 import StaffNavbar from '/components/staffNavbar';
 import DeleteModal from '../components/DeleteModal'; // Import your DeleteModal component
 
+import { ShareButton } from 'react-facebook';
+
+import { SessionProvider } from 'next-auth/react';
+import Head from 'next/head';
+
+
+
 export default function Home() {
   const [works, setWorks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,20 +83,39 @@ export default function Home() {
     setSelectedWork(works.find((work) => work._id === workId));
   };
 
-  const handleDelete = (workId) => {
-    const updatedWorks = works.filter((work) => work._id !== workId);
-    setWorks(updatedWorks);
-    setSelectedWork(null);
+  const handleDelete = () => {
+    setIsDeleteModalOpen(true);
   };
+  
 
-  const handleDeleteConfirmed = () => {
-    console.log('Deleted item:', selectedWork);
-    setIsDeleteModalOpen(false);
+  const handleDeleteConfirmed = async () => {
+    try {
+      const res = await fetch(`/api/delete/${selectedWork._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!res.ok) {
+        throw new Error('Failed to delete work');
+      }
+  
+      const updatedWorks = works.filter((work) => work._id !== selectedWork._id);
+      setWorks(updatedWorks);
+      setSelectedWork(null);
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      console.error('Error deleting work:', error);
+      // Handle error as needed (e.g., show an error message)
+    }
   };
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  
 
   return (
     <>
@@ -106,7 +132,7 @@ export default function Home() {
               tabIndex="1"
             >
               <img
-                src={work.image}
+                src={work.picture}
                 alt={`Image for ${work.title}`}
                 style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
               />
@@ -126,7 +152,7 @@ export default function Home() {
               </div>
 
               <div className={styles['work-image']}>
-                  <img src={selectedWork.image}/>
+                  <img src={selectedWork.picture}/>
               </div>
               <h2>{selectedWork.title}</h2>
               <p>Location: {selectedWork.location}</p>
@@ -187,7 +213,7 @@ export default function Home() {
                 </div>
                 {selectedContact ? (
                     <div className={styles['list-info']}>
-                      <div>Name</div>
+                      <div>Nam</div>
                       <div>Status</div>
                       <div>Action</div>
                       <div className={styles['name-section']}>
@@ -219,29 +245,33 @@ export default function Home() {
                       <div>Name</div>
                       <div>Status</div>
                       <div>Response</div>
-
+                  
                       <div className={styles['name-section']}>
-                        {appliedStudents.map((student) => (
-                          <div key={student.id} className={styles['student-entry']}>
-                            <div>{student.name}</div>
-                            <div>{student.status}</div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className={styles['action-section']}>
-                        {appliedStudents.map((student) => (
-                          <div key={student.id} className={styles['button-entry']}>
-                            <div className={styles['button-group']}>
-                              <button className={styles['accept-button']} onClick={() => acceptStudent(student.id)}>
-                                Accept
-                              </button>
-                              <button className={styles['reject-button']} onClick={() => declineStudent(student.id)}>
-                                Decline
-                              </button>
+                        {selectedWork.studentList
+                          .filter((student) => student.status === 'pending') // Filter out students with status 'pending'
+                          .map((student) => (
+                            <div key={student.id} className={styles['student-entry']}>
+                              <div>{student.studentName}</div>
+                              <div>{student.status}</div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                      </div>
+                  
+                      <div className={styles['action-section']}>
+                        {selectedWork.studentList
+                          .filter((student) => student.status === 'pending') // Filter out students with status 'pending'
+                          .map((student) => (
+                            <div key={student.id} className={styles['button-entry']}>
+                              <div className={styles['button-group']}>
+                                <button className={styles['accept-button']} onClick={() => acceptStudent(student.id)}>
+                                  Accept
+                                </button>
+                                <button className={styles['reject-button']} onClick={() => declineStudent(student.id)}>
+                                  Decline
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   ) : (
