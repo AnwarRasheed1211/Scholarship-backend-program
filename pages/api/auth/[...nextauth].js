@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
 import AzureADProvider from 'next-auth/providers/azure-ad';
-import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase } from '../../../lib/db';
 
 export default NextAuth({
   providers: [
