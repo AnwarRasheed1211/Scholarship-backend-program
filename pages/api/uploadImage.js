@@ -1,6 +1,6 @@
 // api/uploadImage.js
 
-import dbConnect from "../../../lib/db";
+import dbConnect from "../../lib/db";
 import multer from 'multer';
 import GridFsStorage from 'multer-gridfs-storage';
 
