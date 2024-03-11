@@ -8,7 +8,7 @@ const Profile = ({ user }) => {
     <div className={utilStyle["html"]}>
       <div className={styles["profile-page"]}>
         <div className={styles["profile-image"]}>
-          <img 
+          <image 
           src={user.profileImage} 
            alt={`${user.name}'s profile`} 
            style={{marginTop: '20px'}}
