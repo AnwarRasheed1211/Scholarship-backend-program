@@ -15,7 +15,7 @@ export const authOptions = {
       httpOptions: { timeout: 10000 },
     }),
   ],
-  secret: process.env.NEXT_AUTH_SECRET, // Define the secret key
+  secret: process.env.NEXTAUTH_SECRET, // Define the secret key
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && user) {
