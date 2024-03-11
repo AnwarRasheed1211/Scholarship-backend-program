@@ -2,56 +2,50 @@ import Link from 'next/link';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import ProfileNavbar from '/components/profileNavbar';
-import styles from '../components/home.module.css'
+import styles from '../components/home.module.css';
 import { useSession } from 'next-auth/react';
 
-// Inside your component
-// ...
-
 export default function Profile() {
-  const [value, setValue] = React.useState(0);
-  const [selectedAppliedList, setSelectedAppliedList] = useState(true); // Set this to true by default
-  const [selectedHistory, setSelectedHistory] = useState(false);
-  const [selectedSemester, setSelectedSemester] = useState('1/2022'); // Default to the first term
   const { data, status } = useSession();
+  const [works, setWorks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/scholarshipWork", { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await res.json();
+        setWorks(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+      }
+    };
 
-  const [semesters, setSemesters] = useState([
-    {
-      term: '1/2022',
-      totalHours: 60,
-    },
-    {
-      term: '2/2022',
-      totalHours: 20,
-    }
-  ])
+    fetchData();
+  }, []);
 
-  const [works, setWorks] = useState([
-    {
-      id: 1,
-      image: '/workpost.png',
-      title: 'Work 1',
-      hours: '60 hours',
-      appliedList: [
-        { status: 'Accepted', icon: '/applied.png' },
-        { status: 'Pending', icon: '/not_applied.png' },
-        { status: 'Rejected', icon: '/not_applied.png' },
-        // Add more work entries with images and status
-      ],
-      history: [
-        { status: 'Completed', icon: '/completed.png' },
-        { status: 'Incdomplete', icon: '/not_applied.png' },
-        // Add more work entries with images and status
-      ],
-      
-    },
-  ]);
+  const uniqueSemesters = [...new Set(works.map(work => work.semester))];
 
-  const selectedSemesterData = semesters.find((semester) => semester.term === selectedSemester);
-  const totalHours = selectedSemesterData ? selectedSemesterData.totalHours : 0;
-  
-
+  const totalHoursBySemester = uniqueSemesters.reduce((acc, semester) => {
+    const totalHours = works
+      .filter(work => work.semester === semester)
+      .filter(work => work.workStatus === "Accepted")
+      .reduce((sum, work) => {
+        const completedHours = work.studentList.reduce((sum, student) => {
+          if (student.status === 'Completed') {
+            return sum + (work.hours || 0);
+          }
+          return sum;
+        }, 0);
+        return sum + completedHours;
+      }, 0);
+    return { ...acc, [semester]: totalHours };
+  }, {});
 
   return (
     <>
@@ -66,107 +60,84 @@ export default function Profile() {
             <Image src="/profile_pic.png" className={styles['profilePicture']} alt="Profile Picture" width={100} height={100} />
           </div>
           <div className={styles['profileContent']}>
-            
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-              {` ${data.user?.name}`}
+                {` ${data.user?.name}`}
               </div>
             </div>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-              {` ${data.user?.email}`}
+                {` ${data.user?.email}`}
               </div>
             </div>
           </div>
         </div>
         <table className={styles['box']}></table>
         <div className={styles['detailSection']}>
-          <div className={styles['topDetail']}>
-          <div className={styles['title-container']}>
-              <label htmlFor="semester">Select Semester:</label>
-              <select
-                id="semester"
-                onChange={(e) => setSelectedSemester(e.target.value)}
-                value={selectedSemester}
-              >
-                {semesters.map((semester) => (
-                  <option key={semester.term} value={semester.term}>
-                    {semester.term}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {selectedSemesterData && (
-              <div className={styles['hourContent']}>
-                Scholarship work hours: {selectedSemesterData.totalHours}
-              </div>
-            )}
-          </div>
           <div className={styles['bottomDetail']}>
             <div className={styles['title-container']}>
-              <h3
-                className={selectedAppliedList ? styles['active-title'] : ''}
-                onClick={() => {
-                  setSelectedAppliedList(true);
-                  setSelectedHistory(false);
-                }}
-              >
-                Applied List
-              </h3>
-              <h3
-                className={!selectedAppliedList ? styles['active-title'] : ''}
-                onClick={() => {
-                  setSelectedAppliedList(false);
-                  setSelectedHistory(true);
-                }}
-              >
-                History
+              <h3>
+                Work History
               </h3>
             </div>
-            {selectedAppliedList ? (
-              <div className={styles['details-info']}>
-              <div className={styles['qualification-info']}>
-                {works[0].appliedList.map((entry, index) => (
-                  <div key={index} className={styles['work-entry']}>
-                    <div className={styles['work-image']}>
-                      <img src={works[0].image} alt={`Work ${index + 1}`} />
-                    </div>
-                    <div className={styles['work-title']}>
-                      <div>
-                      {works[0].title}
-                      </div>
-                      <div>
-                      {works[0].hours}
-                      </div>
-                    </div>
-                    <div className={styles['work-status']}>
-                      {entry.status}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              </div>
+
+            {/* Display unique semesters and corresponding works */}
+            {isLoading ? (
+              <div>Loading...</div>
             ) : (
-              <div className={styles['details-info']}>
-                {works[0].history.map((entry, index) => (
-                  <div key={index} className={styles['work-entry']}>
-                    <div className={styles['work-image']}>
-                      <img src={works[0].image} alt={`Work ${index + 1}`} />
-                    </div>
-                    <div className={styles['work-title']}>
-                      <div>
-                      {works[0].title}
+              uniqueSemesters.map(semester => (
+                <div key={semester}>
+                  {works
+                    .filter(work => work.semester === semester) // Filter works by semester
+                    .filter(work => work.workStatus === "Accepted") // Display only works with "Accepted" status
+                    .some(work => work.studentList.some(student => student.status === 'Completed' || student.status === 'Incompleted'))
+                    ? (
+                      <div className={styles['details-info']}>
+                        <h3 className={styles['textwork2']}>
+                            {semester} | Total Hours: {totalHoursBySemester[semester]}
+                        </h3>
+                        <div className={styles['details-info']}>
+                          {works
+                            .filter(work => work.semester === semester) // Filter works by semester
+                            .filter(work => work.workStatus === "Accepted") // Display only works with "Accepted" status
+                            .filter(work => work.studentList.some(student => student.status === 'Completed' || student.status === 'Incompleted'))
+                            .map(work => (
+                              <div key={work._id} className={styles['work-entry']}>
+                                <div className={styles['work-image']}>
+                                  <image src={work.picture} alt={`Work ${work.id}`} />
+                                </div>
+                                <div className={styles['work-title']}>
+                                  <div>{work.title}</div>
+                                  <div className={styles['unbold']}>
+                                    <ul>
+                                      <li>
+                                        {work.start} to {work.end}
+                                        {work.hours && (
+                                          <span> | Scholarship Hours: {work.hours}</span>
+                                        )}
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                                <div className={styles['work-status']}>
+                                  <div>
+                                    {work.studentList
+                                      .filter(student => student.status === 'Completed' || student.status === 'Incompleted')
+                                      .map((student, idx) => (
+                                        student.studentName === data?.user?.name ? (
+                                          <span key={idx}>{student.status}</span>
+                                        ) : null
+                                      ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
                       </div>
-                      <div>
-                      {works[0].hours}
-                      </div>
-                    </div>
-                    <div className={styles['work-status']}>
-                      {entry.status}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    ) : null
+                  }
+                </div>
+              ))
             )}
           </div>
         </div>

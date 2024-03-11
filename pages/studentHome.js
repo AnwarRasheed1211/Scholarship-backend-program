@@ -3,7 +3,7 @@ import styles from '../components/home.module.css';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import CreateForm from '../components/Creatework';
-import NavBar from '../components/Navbar'; 
+import NavBar from '../components/Navbar';
 import { useSession } from 'next-auth/react';
 
 
@@ -18,13 +18,15 @@ export default function Home() {
   const [selectedWork, setSelectedWork] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [selectedQualification, setSelectedQualification] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [hoursFilter, setHoursFilter] = useState('');
   const [isApplyModalVisible, setApplyModalVisible] = useState(false);
   const { data, status } = useSession();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/posts/scholarshipWork", { cache: "no-store" });
+        const res = await fetch("/api/scholarshipWork", { cache: "no-store" });
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -45,51 +47,85 @@ export default function Home() {
   }
 
   const handleWorkClick = (workId) => {
-    const selectedWork = works.find((work) => work._id === workId);
-    console.log('Selected Work:', selectedWork);
-    setSelectedWork(selectedWork);
+    setSelectedWork(works.find((work) => work._id === workId));
   };
   
   const url = "http://localhost:3000/api/posts/scholarshipWork";
   
-
-
-
-  const applyWork = async (workId, studentName) => {
+  const applyWork = async () => {
+    if (!data?.user) {
+      console.error("User not logged in");
+      return;
+    }
+  
+    const studentName = `${data.user?.name}`; // assuming that data.user has a 'name' property
+    const workId = selectedWork._id;
+    const status = 'Applied';
+  
+    console.log('studentName:', studentName);
+    console.log('status:', status);
+  
     try {
-      const response = await fetch(`/api/scholarshipWork/${workId}`, {
+      const res = await fetch(`/api/posts/addStudent?id=${workId}&studentName=${encodeURIComponent(studentName)}&status=${encodeURIComponent(status)}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: studentName }),
       });
   
-      if (response.ok) {
-        console.log('Student added successfully');
-        // Reload works after applying
-        const updatedWorks = await (await fetch("/api/scholarshipWork", { cache: "no-store" })).json();
-        setWorks(updatedWorks);
+      if (!res.ok) {
+        const { message } = await res.json();
+        console.error(message);
+        if (message === 'User has already applied to this work') {
+          alert('You have already applied to this work');
+        } else if (message === "Applicant list for this work is full") {
+          alert(message);
+        }
       } else {
-        console.error('Failed to add student');
+        res.json().then(data => {
+          console.log('PUT request successful:', data);
+          if (data.limitReached) {
+            alert("Applicant list for this work is full");
+          } else {
+          alert('Work Applied Success');
+          // You can update the UI or perform any necessary actions here based on the response data
+          }
+        });
       }
+  
     } catch (error) {
-      console.error('Error applying for work:', error);
+      console.error('Failed to apply work:', error);
     }
   };
   
+  const filteredWorks = works ? works.filter(work => {
+    if (selectedStatus === 'all') {
+      return true;
+    }
+    // Check if any student in the studentList array has the selectedStatus
+    return work.studentList.some(student => student.status === selectedStatus);
+  }) : [];
   
-  
-  
-  
-  
+
+  const handleStatusClick = (status) => {
+    setSelectedStatus(status);
+  };
 
   const handleCloseClick = () => {
     setSelectedWork(null); // Reset selectedWork when the Close button is clicked
     setCreateFormVisible(false); // Hide create form if it's open
   };
 
-  
+  const handleHoursFilterChange = (e) => {
+    setHoursFilter(e.target.value);
+  };
+
+  const filteredWorksByHours = works.filter(work => {
+    if (!hoursFilter) {
+      return work.workStatus === "Accepted"; // Filter only works with status "Accepted" if no hours filter is applied
+    }
+    return work.hours === parseInt(hoursFilter) && work.workStatus === "Accepted"; // Filter works by hours and status "Accepted"
+  });
 
   const toggleCreateForm = () => {
     setCreateFormVisible((prevVisible) => !prevVisible);
@@ -100,33 +136,41 @@ export default function Home() {
     <>
     <NavBar />
       <div className={styles.line} />
-      <h1 className={styles['textwork']}>
-        WORK
-      </h1>
+      <div className={styles['work-header']}>
+        <h1 className={styles['textwork']}>APPROVED WORK</h1>
+        {/* Semester Filter Input */}
+        <input
+          type="text"
+          placeholder="Enter working hours (e.g 3/5/10)"
+          value={hoursFilter}
+          onChange={handleHoursFilterChange}
+          className={styles['semester-filter-input']}
+        />
+      </div>
       <div className={styles['home-page']}>
         <div className={styles['works-list']}>
-          <div>
-            {works
-              .filter((work) => work.workStatus === "Accepted") // Display only works with "Accepted" status
-              .map((work) => (
-                <div
-                  key={work._id}
-                  onClick={() => handleWorkClick(work._id)}
-                  className={styles['work-item']}
-                  tabIndex="1"
-                >
-                <img
+        {filteredWorksByHours.length === 0 ? (
+            <div className={styles['no-works-message']}>Work with specified hours not available</div>
+          ) : (
+            filteredWorksByHours.map((work) => (
+              <div
+                key={work._id}
+                onClick={() => handleWorkClick(work._id)}
+                className={styles['work-item']}
+                tabIndex="1"
+              >
+                <image
                   src={work.picture}
                   alt={`Image for ${work.title}`}
                   style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
                 />
                 <div className={styles['work-details']}>
                   <div className={styles['work-title']}>{work.title}</div>
-                  <div className={styles['work-scholarhour']}>{work.hours}</div>
+                  <div className={styles['work-scholarhour']}>{work.hours} Hours</div>
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          )}
         </div>
         <div className={styles['vertical-line']}></div>
 
@@ -138,31 +182,48 @@ export default function Home() {
                   Close
               </button>
               <div className={styles['work-image']}>
-                <img src={selectedWork.picture}  />
+                <image src={selectedWork.picture}  />
               </div>
               
               <h2>{selectedWork.title}</h2>
-              <p>{selectedWork.hours}</p>
+              <p>{selectedWork.hours} Hours</p>
               <p>Location: {selectedWork.location}</p>
-                
-              
-              
               <div className={styles['details-info']}>
                 <h3>Date & Time Schedule</h3>
-                <ul>
-                  {selectedWork.datetime.map((dateTime, index) => (
-                    <li key={index}>
-                      {dateTime.start} to {dateTime.end}
-                      {dateTime.hours&& (
-                        <span> | Scholarship Hours: {dateTime.hours}</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                  <ul>
+                      <div>
+                        {selectedWork.start} to {selectedWork.end}
+                        {selectedWork.hours && (
+                          <span> | Scholarship Hours: {selectedWork.hours}</span>
+                        )}
+                      </div>
+                  </ul>
               </div>
+              
+              
+              <div className={styles['contact-section']}>
+                <div className={styles['title-container']}>
+                    <h3>Student Applicants: {selectedWork.studentList.filter(student => student.status === 'Applied' || student.status === 'Accepted').length} of {selectedWork.limit}</h3>
+                </div>
+                <div className={styles['details-info']}> 
+                  <div>
+                    <ol>
+                      {selectedWork.studentList
+                        .filter(student => student.status !== 'Rejected') // Filter out students with status 'Applied'
+                        .map((student, index) => (
+                          <li key={student.id} className={styles['student-entry']}>
+                            {index + 1}. {student.studentName}  {student.status}
+                          </li>
+                        ))}
+                    </ol>
+                  </div>
+                </div>
+              </div>
+              
+
 
               <div className={styles['button-container']}>
-              <button className={styles['apply-button']} onClick={() => applyWork(selectedWork._id)}>
+              <button className={styles['apply-button']} onClick={applyWork}>
                 Apply
               </button>
               </div>
@@ -202,42 +263,52 @@ export default function Home() {
             <div className={`${styles['no-works-message-s']} ${selectedWork ? styles['hidden'] : ''}`}>
               <div className={styles['approve-title']}>Work Status</div>
               <div className={`${styles['details-info']}`}>
-                {works
-                .filter((work) => work.workStatus === "Accepted") // Display only works with "Accepted" status
-                .map((work) => (
-                  <div key={work.id} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
-                    <div className={styles['work-image']}>
-                      <img src={work.picture} alt={`Work ${work.id}`} />
-                    </div>
-                    <div className={styles['work-title']}>
-                    <h3>
-                      {work.title}
-                      </h3>
-                      <div className={styles['unbold']} >
-                        {work.datetime.map((dateTime, idx) => (
-                          <li key={idx}>
-                            {dateTime.startDate} {dateTime.startTime} to {dateTime.endDate} {dateTime.endTime}
-                            {dateTime.workingHours && (
-                              <span> | Scholarship Hours: {dateTime.workingHours}</span>
-                            )}
-                          </li>
-                        ))}
-                      </div>
-                      <div>
-                      Location: {work.location}
-                      </div>
-                    </div>
-                    <div className={styles['work-status']}>
-                      <div>{work.studentList.map((dateTime, idx) => (
-                          <div key={idx}>
-                            {dateTime.status && (
-                              <span>{dateTime.status}</span>
-                            )}
+                <div className={styles['status-buttons']}>
+                  <button onClick={() => handleStatusClick('all')}>All</button>
+                  <button onClick={() => handleStatusClick('Applied')}>Applied</button>
+                  <button onClick={() => handleStatusClick('Accepted')}>Accepted</button>
+                  <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
+                </div>
+                {filteredWorks.length === 0 ? (
+                  <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
+                ) : (
+                  <div>
+                    {filteredWorks
+                      .filter((work) => work.workStatus === "Accepted")
+                      .map((work) => (
+                        <div key={work.id} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
+                          <div className={styles['work-image']}>
+                            <image src={work.picture} alt={`Work ${work.id}`} />
                           </div>
-                        ))}</div>
-                    </div>
+                          <div className={styles['work-title']}>
+                            <h3>{work.title}</h3>
+                            <div className={styles['unbold']}>
+                              <li>
+                                {work.start} to {work.end}
+                                {work.hours && (
+                                  <span> | Scholarship Hours: {work.hours}</span>
+                                )}
+                              </li>
+                            </div>
+                            <div>
+                              Location: {work.location}
+                            </div>
+                          </div>
+                          <div className={styles['work-status']}>
+                            <div>
+                              {work.studentList.map((student, idx) => (
+                                <div key={idx}>
+                                  {student.studentName === data?.user?.name && ( // Check if the student name matches the current user's name
+                                    <span>{student.status}</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}
