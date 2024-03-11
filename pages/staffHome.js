@@ -344,7 +344,7 @@ export default function Home() {
               className={styles['work-item']}
               tabIndex="1"
             >
-              <image
+              <Image
                 src={work.picture}
                 alt={`Image for ${work.title}`}
                 style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
@@ -365,7 +365,7 @@ export default function Home() {
               </div>
 
               <div className={styles['work-image']}>
-                  <image src={selectedWork.picture}/>
+                  <Image src={selectedWork.picture}/>
               </div>
               <h2>{selectedWork.title}</h2>
               <p>Location: {selectedWork.location}</p>
@@ -526,7 +526,7 @@ export default function Home() {
                     filteredWorks.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                         <div className={styles['work-image']}>
-                            <image src={work.picture} alt={`Work ${index + 1}`} />
+                            <Image src={work.picture} alt={`Work ${index + 1}`} />
                         </div>
                         <div className={styles['work-title']}>
                             <div>{work.title}</div>
