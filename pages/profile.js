@@ -62,12 +62,12 @@ export default function Profile() {
           <div className={styles['profileContent']}>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data.user?.name}`}
+                {` ${data?.user?.name}`}
               </div>
             </div>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data.user?.email}`}
+                {` ${data?.user?.email}`}
               </div>
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function Profile() {
                             .map(work => (
                               <div key={work._id} className={styles['work-entry']}>
                                 <div className={styles['work-image']}>
-                                  <image src={work.picture} alt={`Work ${work.id}`} />
+                                  <img src={work.picture} alt={`Work ${work.id}`} />
                                 </div>
                                 <div className={styles['work-title']}>
                                   <div>{work.title}</div>
