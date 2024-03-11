@@ -3,7 +3,8 @@ import styles from '../components/home.module.css';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import CreateForm from '../components/Creatework';
-import NavBar from '../components/Navbar';
+import NavBar from '@/components/Navbar';
+import ApplyModal from '../components/modal-apply'; 
 import { useSession } from 'next-auth/react';
 
 
@@ -64,7 +65,7 @@ export default function Home() {
   
     console.log('studentName:', studentName);
     console.log('status:', status);
-  
+    
     try {
       const res = await fetch(`/api/posts/addStudent?id=${workId}&studentName=${encodeURIComponent(studentName)}&status=${encodeURIComponent(status)}`, {
         method: 'PUT',
@@ -186,7 +187,6 @@ export default function Home() {
               </div>
               
               <h2>{selectedWork.title}</h2>
-              <p>{selectedWork.hours} Hours</p>
               <p>Location: {selectedWork.location}</p>
               <div className={styles['details-info']}>
                 <h3>Date & Time Schedule</h3>
@@ -203,13 +203,13 @@ export default function Home() {
               
               <div className={styles['contact-section']}>
                 <div className={styles['title-container']}>
-                    <h3>Student Applicants: {selectedWork.studentList.filter(student => student.status === 'Applied' || student.status === 'Accepted').length} of {selectedWork.limit}</h3>
+                    <h3>Student Applicants: {selectedWork.studentList.filter(student => student.status === 'Applied' || student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted').length} of {selectedWork.limit}</h3>
                 </div>
                 <div className={styles['details-info']}> 
                   <div>
                     <ol>
                       {selectedWork.studentList
-                        .filter(student => student.status !== 'Rejected') // Filter out students with status 'Applied'
+                         // Filter out students with status 'Applied'
                         .map((student, index) => (
                           <li key={student.id} className={styles['student-entry']}>
                             {index + 1}. {student.studentName}  {student.status}
@@ -270,7 +270,7 @@ export default function Home() {
                   <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                 </div>
                 {filteredWorks.length === 0 ? (
-                  <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
+                  <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
                 ) : (
                   <div>
                     {filteredWorks

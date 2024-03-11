@@ -3,7 +3,7 @@ import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link'; // Import Link component from Next.js
-import StaffNavbar from '../components/staffNavbar';
+import StaffNavbar from '/components/staffNavbar';
 import DeleteModal from '../components/DeleteModal'; // Import your DeleteModal component
 
 export default function Home() {
@@ -380,6 +380,11 @@ export default function Home() {
                     </div>
                 </ul>
               </div>
+              <div className={styles['contact-section']}>
+                <div className={styles['title-container']}>
+                    <h3>Limit No of Student: {selectedWork.limit}</h3>
+                </div>
+              </div>     
               <div className={styles['button-container']}>
               <button className={styles['delete-button']} onClick={() => setIsDeleteModalOpen(true)}>Delete</button>
                 <DeleteModal
@@ -387,9 +392,7 @@ export default function Home() {
                   onClose={() => setIsDeleteModalOpen(false)}
                   onDelete={handleDeleteConfirmed}
                 />
-                <button className={styles['share-button']}>
-                  Share
-                </button>
+                
               </div>
               <div className={styles['contact-section']}>
                 <div className={styles['title-container']}>
@@ -440,7 +443,7 @@ export default function Home() {
 
                       <div className={styles['action-section']}>
                         {selectedWork.studentList
-                          .filter((student) => student.status === 'Accepted' ) // Filter out students with status 'pending'
+                          .filter((student) => student.status === 'Accepted'  ) // Filter out students with status 'pending'
                           .map((student) => ( 
                           <div key={student.id} className={styles['button-entry']}>
                             <div className={styles['button-group']}>
@@ -463,7 +466,7 @@ export default function Home() {
                   
                       <div className={styles['name-section']}>
                         {selectedWork.studentList
-                          .filter((student) => student.status === 'Applied') // Filter out students with status 'pending'
+                          .filter((student) => student.status === 'Applied' || student.status === 'Accepted') // Filter out students with status 'pending'
                           .map((student) => (
                             <div key={student.id} className={styles['student-entry']}>
                               <div>{student.studentName}</div>
@@ -521,7 +524,7 @@ export default function Home() {
                     <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                     </div>
                     {filteredWorks.length === 0 ? (
-                    <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
+                    <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
                     ) : (
                     filteredWorks.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
