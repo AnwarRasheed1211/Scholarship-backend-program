@@ -3,8 +3,7 @@ import styles from '../components/home.module.css';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import CreateForm from '../components/Creatework';
-import NavBar from '@/components/Navbar';
-import ApplyModal from '../components/modal-apply'; 
+import NavBar from '../components/Navbar';
 import { useSession } from 'next-auth/react';
 
 
