@@ -521,7 +521,7 @@ export default function Home() {
                     <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                     </div>
                     {filteredWorks.length === 0 ? (
-                    <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
+                    <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
                     ) : (
                     filteredWorks.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
