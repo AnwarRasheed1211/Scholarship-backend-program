@@ -13,24 +13,18 @@ export default function Home() {
 
   // Function to determine the redirect URL based on user role
   const getRedirectUrl = async (email) => {
-    if (email.match(/^u\d+@au\.edu$/)) {
-      return '/studentHome'; // Redirect to student page if email matches the pattern
+    if (email === 'vms0403@au.edu') {
+      return '/registerHome'; // Redirect to registerHome page if email matches
     } else {
       // Fetch email from MongoDB and check if it matches the user's email
-      const response = await fetch('/api/user');
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('User Data:', userData); // Log user data to the console
-
-        if (email.localeCompare(userData.email) == 0) {
-          return '/registerHome'; // Redirect to registrar page if email matches MongoDB
-        }
+      if (email.match(/^u\d+@au\.edu$/)) {
+        return '/studentHome'; // Redirect to student page if email matches the pattern
+      } else {
+        return '/staffHome'; // Default redirect to staff page
       }
-      return '/staffHome'; // Default redirect to staff page
     }
   };
-
- 
+  
 
   return (
     <>
@@ -43,7 +37,7 @@ export default function Home() {
       <main className={styles['login-page']}>
         <div className={styles['login-container']}>
           <Image src="/abac_logo.png" alt="Image" width={90} height={90} className={styles['logo-image']} />
-          <h2 className={styles['custom-h2']}>Abac Scholarship </h2>
+          <h2 className={styles['custom-h2']}>AU Scholarship </h2>
           <div className={styles['buttons-container']}>
             <button
               className={styles['loginbutton']}
