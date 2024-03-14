@@ -162,6 +162,7 @@ export default function Home() {
                 <Image
                   src={work.picture}
                   alt={`Image for ${work.title}`}
+                  width={100} height={100}
                   style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
                 />
                 <div className={styles['work-details']}>
@@ -182,7 +183,7 @@ export default function Home() {
                   Close
               </button>
               <div className={styles['work-image']}>
-                <Image src={selectedWork.picture}  />
+                <Image src={selectedWork.picture} width={100} height={50} />
               </div>
               
               <h2>{selectedWork.title}</h2>
@@ -277,7 +278,7 @@ export default function Home() {
                       .map((work) => (
                         <div key={work.id} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                           <div className={styles['work-image']}>
-                            <Image src={work.picture} alt={`Work ${work.id}`} />
+                            <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50} />
                           </div>
                           <div className={styles['work-title']}>
                             <h3>{work.title}</h3>
