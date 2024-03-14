@@ -104,7 +104,7 @@ export default function Profile() {
                             .map(work => (
                               <div key={work._id} className={styles['work-entry']}>
                                 <div className={styles['work-image']}>
-                                  <Image src={work.picture} alt={`Work ${work.id}`} />
+                                  <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50} />
                                 </div>
                                 <div className={styles['work-title']}>
                                   <div>{work.title}</div>

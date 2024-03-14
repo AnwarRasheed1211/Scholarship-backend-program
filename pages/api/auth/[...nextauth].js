@@ -39,6 +39,14 @@ export const authOptions = {
         session.error = token.error;
         session.accessToken = token.accessToken;
       }
+
+      if (session.accessToken) {
+        session.redirect = {
+          destination: '/login',
+          permanent: false,
+        };
+      }
+
       return session;
     },
   },
