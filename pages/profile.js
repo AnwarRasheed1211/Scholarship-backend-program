@@ -63,12 +63,12 @@ export default function Profile() {
           <div className={styles['profileContent']}>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data.user?.name}`}
+                {` ${data?.user?.name}`}
               </div>
             </div>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data.user?.email}`}
+                {` ${data?.user?.email}`}
               </div>
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function Profile() {
                             .filter(work => work.semester === semester) // Filter works by semester
                             .filter(work => work.workStatus === "Accepted") // Display only works with "Accepted" status
                             .filter(work => work.studentList.some(student => student.status === 'Completed' || student.status === 'Incompleted'))
-                            .filter(work => work.studentList.some(student => student.studentName === data.user?.name))
+                            .filter(work => work.studentList.some(student => student.studentName === data?.user?.name))
                             .map(work => (
                               <div key={work._id} className={styles['work-entry']}>
                                 <div className={styles['work-image']}>
@@ -126,7 +126,7 @@ export default function Profile() {
                                     {work.studentList
                                       .filter(student => student.status === 'Completed' || student.status === 'Incompleted')
                                       .map((student, idx) => (
-                                        student.studentName === data.user?.name ? (
+                                        student.studentName === data?.user?.name ? (
                                           <span key={idx}>{student.status}</span>
                                         ) : null
                                       ))}
