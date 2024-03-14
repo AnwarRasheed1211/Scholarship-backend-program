@@ -3,7 +3,7 @@ import styles from '../components/home.module.css';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import CreateForm from '../components/Creatework';
-import NavBar from '../components/Navbar';
+import NavBar from '@/components/Navbar';
 import { useSession } from 'next-auth/react';
 
 
@@ -159,10 +159,9 @@ export default function Home() {
                 className={styles['work-item']}
                 tabIndex="1"
               >
-                <Image
+                <img
                   src={work.picture}
                   alt={`Image for ${work.title}`}
-                  width={100} height={100}
                   style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
                 />
                 <div className={styles['work-details']}>
@@ -183,10 +182,10 @@ export default function Home() {
                   Close
               </button>
               <div className={styles['work-image']}>
-                <Image src={selectedWork.picture} width={100} height={50} />
+                <img src={selectedWork.picture}  />
               </div>
-              
-              <h2>{selectedWork.title}</h2>
+              <h2>Term {selectedWork.semester} </h2>
+              <h3>{selectedWork.title}</h3>
               <p>Location: {selectedWork.location}</p>
               <div className={styles['details-info']}>
                 <h3>Date & Time Schedule</h3>
@@ -270,15 +269,16 @@ export default function Home() {
                   <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                 </div>
                 {filteredWorks.length === 0 ? (
-                  <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
+                  <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
                 ) : (
                   <div>
                     {filteredWorks
                       .filter((work) => work.workStatus === "Accepted")
+                      .filter(work => work.studentList.some(student => student.studentName === data?.user?.name))
                       .map((work) => (
                         <div key={work.id} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                           <div className={styles['work-image']}>
-                            <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50} />
+                            <img src={work.picture} alt={`Work ${work.id}`} />
                           </div>
                           <div className={styles['work-title']}>
                             <h3>{work.title}</h3>

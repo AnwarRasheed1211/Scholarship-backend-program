@@ -35,7 +35,7 @@ export default function Profile() {
     const totalHours = works
       .filter(work => work.semester === semester)
       .filter(work => work.workStatus === "Accepted")
-      .filter(work => work.studentList.some(student => student.studentName === data.user?.name))
+      .filter(work => work.studentList.some(student => student.studentName === (data?.user?.name || '')))
       .reduce((sum, work) => {
         const completedHours = work.studentList.reduce((sum, student) => {
           if (student.status === 'Completed') {
