@@ -5,6 +5,13 @@ import Image from 'next/image';
 
 const StaffNavbar = () => {
   const router = useRouter();
+  const { data: session } = useSession(); // Fetch the session
+
+  const handleLogout = async () => {
+    console.log('Session before signOut:', session); // Log the session before signOut
+    await signOut({ callbackUrl: '/' });
+  };
+
 
   if (router.pathname === '/registerHome') {
     return (
@@ -17,9 +24,9 @@ const StaffNavbar = () => {
               </div>
           </div>
           <div className={styles['imge-container']}>
-            <Link href={'/'}>
-            <div className={styles['text2']}>Log Out</div>
-            </Link>
+          {session ? (
+              <div className={styles['text2']} onClick={handleLogout}>Log Out</div>
+            ) : null}
             <Image src="/work_upload.png" alt="Another Image" width={35} height={35} />
           </div>
         </div>
