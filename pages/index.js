@@ -30,6 +30,17 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      const email = session.user.email;
+      getRedirectUrl(email).then((url) => {
+        router.push(url); // Use router.push() for client-side navigation
+      }).catch((error) => {
+        console.error('Error:', error);
+      });
+    }
+  }, [status, session]);
+
  
 
   return (
