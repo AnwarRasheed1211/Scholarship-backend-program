@@ -159,7 +159,7 @@ export default function Home() {
                 className={styles['work-item']}
                 tabIndex="1"
               >
-                <img
+                <Image
                   src={work.picture}
                   alt={`Image for ${work.title}`}
                   style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
@@ -182,7 +182,7 @@ export default function Home() {
                   Close
               </button>
               <div className={styles['work-image']}>
-                <img src={selectedWork.picture}  />
+                <Image src={selectedWork.picture}  />
               </div>
               <h2>Term {selectedWork.semester} </h2>
               <h3>{selectedWork.title}</h3>
@@ -269,7 +269,7 @@ export default function Home() {
                   <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                 </div>
                 {filteredWorks.length === 0 ? (
-                  <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
+                  <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
                 ) : (
                   <div>
                     {filteredWorks
@@ -278,7 +278,7 @@ export default function Home() {
                       .map((work) => (
                         <div key={work.id} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                           <div className={styles['work-image']}>
-                            <img src={work.picture} alt={`Work ${work.id}`} />
+                            <Image src={work.picture} alt={`Work ${work.id}`} />
                           </div>
                           <div className={styles['work-title']}>
                             <h3>{work.title}</h3>
