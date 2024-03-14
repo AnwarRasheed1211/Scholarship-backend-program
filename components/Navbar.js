@@ -7,7 +7,7 @@ import { useSession, signOut } from 'next-auth/react';
 
 const NavBar = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { session } = useSession();
 
   const handleLogout = async () => {
     console.log('Session before signOut:', session); // Log the session before signOut
