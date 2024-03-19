@@ -23,14 +23,13 @@
 .parent-container {
   border: 1px solid black;
   margin: 1rem;
-  padding: 2rem 2rem;
-  text-align: center;
+  padding: 2rem;
 }
 
 .float-child {
   display: inline-block;
   border: 1px solid transparent;
-  padding: 2rem 8rem;
+  padding: 2rem;
   vertical-align: middle;
 }
 
@@ -39,12 +38,12 @@
 }
 
 .form-column {
-  text-align: center;
-  padding: 50px;
+  text-align: left; /* Align form elements to the left */
 }
 
 .form-container label {
   margin-bottom: 5px;
+  display: block; /* Ensure labels are displayed as block elements */
 }
 
 .form-container input,
@@ -53,82 +52,46 @@
   width: 100%;
   padding: 10px;
   border: 1px solid black;
-  margin-bottom: 6px;
-  background-color: white;
-  color: black;
+  margin-bottom: 12px;
   transition-duration: 0.4s;
 }
 
 .form-container input:hover,
 .form-container textarea:hover {
-  background-color: gray;
+  background-color: #f2f2f2; /* Change background color on hover */
   color: black;
 }
 
 .form-button-container input {
-  text-align: center;
+  width: 100%;
   margin-top: 20px;
   background-color: gray;
   color: white;
   border-radius: 50px;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
   transition-duration: 0.4s;
 }
 
 .form-button-container input:hover {
-  background-color: blue;
-  color: white;
+  background-color: #555; /* Change background color on hover */
 }
-
-.left-column {
-  width: 50%;
-  padding: 0 10px;
-  align-items: flex-start; /* Align fields to the top */
-}
-
-.right-column {
-  flex-direction: column;
-  width: 50%;
-  padding: 0 10px;
-}
-
-.upload-conatiner {
-  color: black;
-}
-
-.upload-pic {
-  display: inline-block;
-  border-radius: 25px;
-  padding: 200px 100px;
-  border: 1px dashed black;
-  background-color: white;
-  color: black;
-  margin: auto;
-}
-
-.container-form {
-  display: inline-block;
-  max-width: 700px;
-  margin: auto;
-  border: 1px solid transparent;
-  text-align: center;
-  padding: 50px;
-  align-items: flex-end; /* Align content to the bottom of the container */
-  border-radius: 10px;
-}
-
 
 .datetime-box {
   margin: 10px;
-  padding: 5px;
+  padding: 10px;
   background-color: #33b249;
   border: none;
   border-radius: 10px;
+  color: white;
 }
 
-.remove-box  {
-  padding: 5px;
+.remove-box {
+  margin: 10px;
+  padding: 10px;
   background-color: #ED0800;
   border: none;
   border-radius: 10px;
-
+  color: white;
 }

@@ -34,40 +34,40 @@ export default function Home() {
         setIsLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
-
+  
   const acceptStudent = async (id) => {
     console.log("acceptStudent function called with student ID:", id);
     console.log("Selected work:", selectedWork);
-
+  
     if (!selectedWork) {
       console.error("Work not found");
       alert("Work not found");
       return;
     }
-
+  
     // Find the student in the studentList array within the selectedWork
     const acceptedStudent = selectedWork.studentList.find((student) => student._id.toString() === id);
-
+  
     if (!acceptedStudent) {
       console.error("Student not found");
       alert("Student not found");
       return;
     }
-
+  
     // Update the status of the accepted student to 'Accepted'
     const updatedStudentList = selectedWork.studentList.map((student) =>
       student._id.toString() === id ? { ...student, status: 'Accepted' } : student
     );
-
+  
     // Update the selectedWork state with the updated studentList
     setSelectedWork((prevSelectedWork) => ({
       ...prevSelectedWork,
       studentList: updatedStudentList,
     }));
-
+  
     // Send a PUT request to the server to update the student status
     try {
       const response = await fetch(`/api/scholarshipWork/${selectedWork._id}`, {
@@ -79,7 +79,7 @@ export default function Home() {
           studentList: updatedStudentList,
         }),
       });
-
+  
       if (!response.ok) {
         const { message } = await response.json();
         console.error(message);
@@ -93,39 +93,39 @@ export default function Home() {
       alert('Failed to update student status on the server');
     }
   };
-
-
+  
+  
 
   const declineStudent = async (id) => {
     console.log("acceptStudent function called with student ID:", id);
     console.log("Selected work:", selectedWork);
-
+  
     if (!selectedWork) {
       console.error("Work not found");
       alert("Work not found");
       return;
     }
-
+  
     // Find the student in the studentList array within the selectedWork
     const rejectedStudent = selectedWork.studentList.find((student) => student._id.toString() === id);
-
+  
     if (!rejectedStudent) {
       console.error("Student not found");
       alert("Student not found");
       return;
     }
-
+  
     // Update the status of the accepted student to 'Accepted'
     const updatedStudentList = selectedWork.studentList.map((student) =>
       student._id.toString() === id ? { ...student, status: 'Rejected' } : student
     );
-
+  
     // Update the selectedWork state with the updated studentList
     setSelectedWork((prevSelectedWork) => ({
       ...prevSelectedWork,
       studentList: updatedStudentList,
     }));
-
+  
     // Send a PUT request to the server to update the student status
     try {
       const response = await fetch(`/api/scholarshipWork/${selectedWork._id}`, {
@@ -137,7 +137,7 @@ export default function Home() {
           studentList: updatedStudentList,
         }),
       });
-
+  
       if (!response.ok) {
         const { message } = await response.json();
         console.error(message);
@@ -155,33 +155,33 @@ export default function Home() {
   const completeStudent = async (id) => {
     console.log("completeStudent function called with student ID:", id);
     console.log("Selected work:", selectedWork);
-
+  
     if (!selectedWork) {
       console.error("Work not found");
       alert("Work not found");
       return;
     }
-
+  
     // Find the student in the studentList array within the selectedWork
     const studentToComplete = selectedWork.studentList.find((student) => student._id.toString() === id);
-
+  
     if (!studentToComplete) {
       console.error("Student not found");
       alert("Student not found");
       return;
     }
-
+  
     // Update the status of the student to 'Completed'
     const updatedStudentList = selectedWork.studentList.map((student) =>
       student._id.toString() === id ? { ...student, status: 'Completed' } : student
     );
-
+  
     // Update the selectedWork state with the updated studentList
     setSelectedWork((prevSelectedWork) => ({
       ...prevSelectedWork,
       studentList: updatedStudentList,
     }));
-
+  
     // Send a PUT request to the server to update the student status
     try {
       const response = await fetch(`/api/scholarshipWork/${selectedWork._id}`, {
@@ -193,7 +193,7 @@ export default function Home() {
           studentList: updatedStudentList,
         }),
       });
-
+  
       if (!response.ok) {
         const { message } = await response.json();
         console.error(message);
@@ -211,33 +211,33 @@ export default function Home() {
   const incompleteStudent = async (id) => {
     console.log("acceptStudent function called with student ID:", id);
     console.log("Selected work:", selectedWork);
-
+  
     if (!selectedWork) {
       console.error("Work not found");
       alert("Work not found");
       return;
     }
-
+  
     // Find the student in the studentList array within the selectedWork
     const acceptedStudent = selectedWork.studentList.find((student) => student._id.toString() === id);
-
+  
     if (!acceptedStudent) {
       console.error("Student not found");
       alert("Student not found");
       return;
     }
-
+  
     // Update the status of the accepted student to 'Accepted'
     const updatedStudentList = selectedWork.studentList.map((student) =>
       student._id.toString() === id ? { ...student, status: 'Incompleted' } : student
     );
-
+  
     // Update the selectedWork state with the updated studentList
     setSelectedWork((prevSelectedWork) => ({
       ...prevSelectedWork,
       studentList: updatedStudentList,
     }));
-
+  
     // Send a PUT request to the server to update the student status
     try {
       const response = await fetch(`/api/scholarshipWork/${selectedWork._id}`, {
@@ -249,7 +249,7 @@ export default function Home() {
           studentList: updatedStudentList,
         }),
       });
-
+  
       if (!response.ok) {
         const { message } = await response.json();
         console.error(message);
@@ -264,7 +264,7 @@ export default function Home() {
     }
   };
 
-  // Pass [] as the second argument to run the effect only once on mount
+   // Pass [] as the second argument to run the effect only once on mount
 
   const handleWorkClick = (workId) => {
     setSelectedWork(works.find((work) => work._id === workId));
@@ -280,14 +280,47 @@ export default function Home() {
   const handleStatusClick = (status) => {
     setSelectedStatus(status);
   };
-
+  
   const handleSemesterFilterChange = (e) => {
     setSemesterFilter(e.target.value);
   };
 
   const filteredWorksBySemester = semesterFilter
-    ? works.filter(work => work.semester === semesterFilter)
-    : works;
+  ? works
+      .filter((work) => work.semester === semesterFilter)
+      .sort((a, b) => {
+        const startDateA = new Date(a.start);
+        const startDateB = new Date(b.start);
+        const endDateA = new Date(a.end);
+        const endDateB = new Date(b.end);
+
+        // Compare start dates
+        if (startDateA > startDateB) return -1;
+        if (startDateA < startDateB) return 1;
+
+        // If start dates are equal, compare end dates
+        if (endDateA > endDateB) return -1;
+        if (endDateA < endDateB) return 1;
+
+        return 0;
+      })
+  : works.sort((a, b) => {
+        const startDateA = new Date(a.start);
+        const startDateB = new Date(b.start);
+        const endDateA = new Date(a.end);
+        const endDateB = new Date(b.end);
+
+        // Compare start dates
+        if (startDateA > startDateB) return -1;
+        if (startDateA < startDateB) return 1;
+
+        // If start dates are equal, compare end dates
+        if (endDateA > endDateB) return -1;
+        if (endDateA < endDateB) return 1;
+
+        return 0;
+      });
+
 
   const handleDeleteConfirmed = async () => {
     try {
@@ -297,11 +330,11 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (!res.ok) {
         throw new Error('Failed to delete work');
       }
-
+  
       const updatedWorks = works.filter((work) => work._id !== selectedWork._id);
       setWorks(updatedWorks);
       setSelectedWork(null);
@@ -331,34 +364,32 @@ export default function Home() {
           className={styles['semester-filter-input']}
         />
       </div>
-
+      
       <div className={styles['home-page']}>
         <div className={styles['works-list']}>
-          {filteredWorksBySemester.length === 0 ? (
-            <div className={styles['no-works-message']}>---------- Work not available ----------</div>
-          ) : (
-            filteredWorksBySemester.map((work) => (
-              <div
-                key={work._id}
-                onClick={() => handleWorkClick(work._id)}
-                className={styles['work-item']}
-                tabIndex="1"
-              >
-                <Image
+        {filteredWorksBySemester.length === 0 ? (
+          <div className={styles['no-works-message']}>---------- Work not available ----------</div>
+        ) : (
+        filteredWorksBySemester.map((work) => (
+            <div
+              key={work._id}
+              onClick={() => handleWorkClick(work._id)}
+              className={styles['work-item']}
+              tabIndex="1"
+            >
+              <Image
                   src={work.picture}
                   alt={`Image for ${work.title}`}
                   width={100} // Provide the width property
                   height={100} // Provide the height property
                   style={{ borderRadius: '10px' }}
                 />
-
-
-                <div className={styles['work-details']}>
-                  <div className={styles['work-title']}>{work.title}</div>
-                  <div>Term {work.semester}</div>
-                </div>
+              <div className={styles['work-details']}>
+                <div className={styles['work-title']}>{work.title}</div>
+                <div>Term {work.semester}</div>
               </div>
-            )))}
+            </div>
+          )))}
         </div>
         <div className={styles['vertical-line']}></div>
         <div className={styles['work-details']}>
@@ -369,34 +400,33 @@ export default function Home() {
               </div>
 
               <div className={styles['work-image']}>
-                <Image src={selectedWork.picture} width={100} height={50} />
-              </div>
+              <Image src={selectedWork.picture} width={100} height={50}/>              </div>
               <h2>{selectedWork.title}</h2>
               <p>Location: {selectedWork.location}</p>
               <div className={styles['details-info']}>
                 <h3>Date & Time Schedule</h3>
                 <ul>
-                  <div>
-                    {selectedWork.start} to {selectedWork.end}
-                    {selectedWork.hours && (
-                      <span> | Scholarship Hours: {selectedWork.hours}</span>
-                    )}
-                  </div>
+                    <div>
+                      {selectedWork.start} to {selectedWork.end}
+                      {selectedWork.hours && (
+                        <span> | Scholarship Hours: {selectedWork.hours}</span>
+                      )}
+                    </div>
                 </ul>
               </div>
               <div className={styles['contact-section']}>
                 <div className={styles['title-container']}>
-                  <h3>Limit No of Student: {selectedWork.limit}</h3>
+                    <h3>Limit No of Student: {selectedWork.limit}</h3>
                 </div>
-              </div>
+              </div>     
               <div className={styles['button-container']}>
-                <button className={styles['delete-button']} onClick={() => setIsDeleteModalOpen(true)}>Delete</button>
+              <button className={styles['delete-button']} onClick={() => setIsDeleteModalOpen(true)}>Delete</button>
                 <DeleteModal
                   isOpen={isDeleteModalOpen}
                   onClose={() => setIsDeleteModalOpen(false)}
                   onDelete={handleDeleteConfirmed}
                 />
-
+                
               </div>
               <div className={styles['contact-section']}>
                 <div className={styles['title-container']}>
@@ -430,25 +460,25 @@ export default function Home() {
                   </h3>
                 </div>
                 {selectedContact ? (
-                  <div className={styles['list-info']}>
-                    <div>Name</div>
-                    <div>Status</div>
-                    <div>Action</div>
-                    <div className={styles['name-section']}>
-                      {selectedWork.studentList
-                        .filter((student) => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted') // Filter out students with status 'pending'
-                        .map((student) => (
-                          <div key={student.id} className={styles['student-entry']}>
-                            <div>{student.studentName}</div>
-                            <div>{student.status}</div>
-                          </div>
-                        ))}
-                    </div>
+                    <div className={styles['list-info']}>
+                      <div>Name</div>
+                      <div>Status</div>
+                      <div>Action</div>
+                      <div className={styles['name-section']}>
+                        {selectedWork.studentList
+                          .filter((student) => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted') // Filter out students with status 'pending'
+                          .map((student) => (
+                            <div key={student.id} className={styles['student-entry']}>
+                              <div>{student.studentName}</div>
+                              <div>{student.status}</div>
+                            </div>
+                          ))} 
+                      </div>
 
-                    <div className={styles['action-section']}>
-                      {selectedWork.studentList
-                        .filter((student) => student.status === 'Accepted') // Filter out students with status 'pending'
-                        .map((student) => (
+                      <div className={styles['action-section']}>
+                        {selectedWork.studentList
+                          .filter((student) => student.status === 'Accepted'  ) // Filter out students with status 'pending'
+                          .map((student) => ( 
                           <div key={student.id} className={styles['button-entry']}>
                             <div className={styles['button-group']}>
                               <button className={styles['accept-button']} onClick={() => completeStudent(student._id)}>
@@ -460,92 +490,91 @@ export default function Home() {
                             </div>
                           </div>
                         ))}
+                      </div>
                     </div>
-                  </div>
-                ) : selectedStudentApplied ? (
-                  <div className={styles['list-info']}>
-                    <div>Name</div>
-                    <div>Status</div>
-                    <div>Response</div>
-
-                    <div className={styles['name-section']}>
-                      {selectedWork.studentList
-                        .filter((student) => student.status === 'Applied' || student.status === 'Accepted') // Filter out students with status 'pending'
-                        .map((student) => (
-                          <div key={student.id} className={styles['student-entry']}>
-                            <div>{student.studentName}</div>
-                            <div>{student.status}</div>
-                          </div>
-                        ))}
-                    </div>
-
-                    <div className={styles['action-section']}>
-                      {selectedWork.studentList
-                        .filter((student) => student.status === 'Applied') // Filter out students with status 'pending'
-                        .map((student) => (
-                          <div key={student.id} className={styles['button-entry']}>
-                            <div className={styles['button-group']}>
+                  ) : selectedStudentApplied ? (
+                    <div className={styles['list-info']}>
+                      <div>Name</div>
+                      <div>Status</div>
+                      <div>Response</div>
+                  
+                      <div className={styles['name-section']}>
+                        {selectedWork.studentList
+                          .filter((student) => student.status === 'Applied' || student.status === 'Accepted') // Filter out students with status 'pending'
+                          .map((student) => (
+                            <div key={student.id} className={styles['student-entry']}>
+                              <div>{student.studentName}</div>
+                              <div>{student.status}</div>
+                            </div>
+                          ))}
+                      </div>
+                  
+                      <div className={styles['action-section']}>
+                        {selectedWork.studentList
+                          .filter((student) => student.status === 'Applied') // Filter out students with status 'pending'
+                          .map((student) => (
+                            <div key={student.id} className={styles['button-entry']}>
+                              <div className={styles['button-group']}>
                               <button className={styles['accept-button']} onClick={() => {
                                 console.log("Accept button clicked for student with ID:", student._id);
                                 acceptStudent(student._id);
                               }}>
                                 Accept
                               </button>
-                              <button className={styles['reject-button']} onClick={() => declineStudent(student._id)}>
-                                Decline
-                              </button>
+                                <button className={styles['reject-button']} onClick={() => declineStudent(student._id)}>
+                                  Decline
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                      </div>
                     </div>
-                  </div>
-                ) : (
+                  ) : (
+                <div className={styles['details-info']}>
                   <div className={styles['details-info']}>
-                    <div className={styles['details-info']}>
-                      <h3>Description</h3>
-                      <p>{selectedWork.details}</p>
-                    </div>
-                    <div className={styles['details-info']}>
-                      <h3>Qualification</h3>
-                      <p>{selectedWork.qualification}</p>
-                    </div>
-                    <div className={styles['details-info']}>
-                      <h3>Contact</h3>
-                      <p>{selectedWork.contacts}</p>
-                    </div>
+                    <h3>Description</h3>
+                    <p>{selectedWork.details}</p>
                   </div>
-                )}
+                  <div className={styles['details-info']}>
+                    <h3>Qualification</h3>
+                    <p>{selectedWork.qualification}</p>
+                  </div>
+                  <div className={styles['details-info']}>
+                    <h3>Contact</h3>
+                    <p>{selectedWork.contacts}</p>
+                  </div>
               </div>
-            </>
+                  )}
+            </div>
+          </>
           ) : (
             <div className={`${styles['no-works-message-s']} ${selectedWork ? styles['hidden'] : ''}`}>
-              <div className={styles['approve-title']}>Approval Status List</div>
-              <div className={`${styles['details-info']}`}>
-                <div className={styles['status-buttons']}>
-                  <button onClick={() => handleStatusClick('all')}>All</button>
-                  <button onClick={() => handleStatusClick('Pending')}>Pending</button>
-                  <button onClick={() => handleStatusClick('Accepted')}>Accepted</button>
-                  <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
-                </div>
-                {filteredWorks.length === 0 ? (
-                  <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
-                ) : (
-                  filteredWorks.map((work, index) => (
-                    <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
-                      <div className={styles['work-image']}>
-                        <Image src={work.picture} alt={`Work ${index + 1}`   } width={100} height={50} />
-                      </div>
-                      <div className={styles['work-title']}>
-                        <div>{work.title}</div>
-                        <div>{work.hours} Hours</div>
-                      </div>
-                      <div className={styles['work-status']}>
-                        <div>{work.workStatus}</div>
-                      </div>
+                <div className={styles['approve-title']}>Approval Status List</div>
+                <div className={`${styles['details-info']}`}>
+                    <div className={styles['status-buttons']}>
+                    <button onClick={() => handleStatusClick('all')}>All</button>         
+                    <button onClick={() => handleStatusClick('Pending')}>Pending</button>
+                    <button onClick={() => handleStatusClick('Accepted')}>Accepted</button>
+                    <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                     </div>
-                  ))
-                )}
-              </div>
+                    {filteredWorks.length === 0 ? (
+                    <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
+                    ) : (
+                    filteredWorks.map((work, index) => (
+                        <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
+                        <div className={styles['work-image']}>
+                        <Image src={work.picture} alt={`Work ${index + 1}`} width={100} height={50} />                        </div>
+                        <div className={styles['work-title']}>
+                            <div>{work.title}</div>
+                            <div>{work.hours} Hours</div>
+                        </div>
+                        <div className={styles['work-status']}>
+                            <div>{work.workStatus}</div>
+                        </div>
+                        </div>
+                    ))
+                    )}
+                </div>
             </div>
 
           )}

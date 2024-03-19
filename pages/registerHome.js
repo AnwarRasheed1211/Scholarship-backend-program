@@ -56,8 +56,41 @@ export default function Register() {
   };
 
   const filteredWorksBySemester = semesterFilter
-    ? works.filter(work => work.semester === semesterFilter)
-    : works;
+  ? works
+      .filter((work) => work.semester === semesterFilter)
+      .sort((a, b) => {
+        const startDateA = new Date(a.start);
+        const startDateB = new Date(b.start);
+        const endDateA = new Date(a.end);
+        const endDateB = new Date(b.end);
+
+        // Compare start dates
+        if (startDateA > startDateB) return -1;
+        if (startDateA < startDateB) return 1;
+
+        // If start dates are equal, compare end dates
+        if (endDateA > endDateB) return -1;
+        if (endDateA < endDateB) return 1;
+
+        return 0;
+      })
+  : works.sort((a, b) => {
+        const startDateA = new Date(a.start);
+        const startDateB = new Date(b.start);
+        const endDateA = new Date(a.end);
+        const endDateB = new Date(b.end);
+
+        // Compare start dates
+        if (startDateA > startDateB) return -1;
+        if (startDateA < startDateB) return 1;
+
+        // If start dates are equal, compare end dates
+        if (endDateA > endDateB) return -1;
+        if (endDateA < endDateB) return 1;
+
+        return 0;
+      });
+
 
   const handleCloseClick = () => {
     setSelectedWork(null); // Reset selectedWork when the Close button is clicked
@@ -216,8 +249,7 @@ export default function Register() {
               </div>
 
               <div className={styles['work-image']}>
-                  <Image src={selectedWork.picture} width={100} height={50}/>
-              </div>
+              <Image src={selectedWork.picture} width={100} height={50}/>              </div>
               <h2>{selectedWork.title}</h2>
               <p>{selectedWork.description}</p>
               <p>Location: {selectedWork.location}</p>
@@ -276,13 +308,12 @@ export default function Register() {
                     <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                     </div>
                     {filteredWorks.length === 0 ? (
-                    <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
+                    <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
                     ) : (
                     filteredWorks.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                         <div className={styles['work-image']}>
-                            <Image src={work.picture} alt={`Work ${index + 1}`} width={100} height={50} />
-                        </div>
+                        <Image src={selectedWork.picture} width={100} height={50}/>                        </div>
                         <div className={styles['work-title']}>
                             <div>{work.title}</div>
                             <div>{work.hours} Hours</div>

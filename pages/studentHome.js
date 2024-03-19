@@ -12,6 +12,7 @@ import { useSession } from 'next-auth/react';
 
 export default function Home() {
 
+  const [noWorksMessage, setNoWorksMessage] = useState('');
   const [works, setWorks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateFormVisible, setCreateFormVisible] = useState(false);
@@ -102,9 +103,11 @@ export default function Home() {
     if (selectedStatus === 'all') {
       return true;
     }
-    // Check if any student in the studentList array has the selectedStatus
-    return work.studentList.some(student => student.status === selectedStatus);
+    // Check if any student in the studentList array has the selectedStatus and if the student name matches the current user's name
+    return work.studentList.some(student => student.status === selectedStatus && student.studentName === data?.user?.name);
   }) : [];
+
+  
   
 
   const handleStatusClick = (status) => {
@@ -120,12 +123,30 @@ export default function Home() {
     setHoursFilter(e.target.value);
   };
 
-  const filteredWorksByHours = works.filter(work => {
+  const filteredWorksByHours = works
+  .filter((work) => {
     if (!hoursFilter) {
       return work.workStatus === "Accepted"; // Filter only works with status "Accepted" if no hours filter is applied
     }
     return work.hours === parseInt(hoursFilter) && work.workStatus === "Accepted"; // Filter works by hours and status "Accepted"
+  })
+  .sort((a, b) => {
+    const startDateA = new Date(a.start);
+    const startDateB = new Date(b.start);
+    const endDateA = new Date(a.end);
+    const endDateB = new Date(b.end);
+
+    // Compare start dates
+    if (startDateA > startDateB) return -1;
+    if (startDateA < startDateB) return 1;
+
+    // If start dates are equal, compare end dates
+    if (endDateA > endDateB) return -1;
+    if (endDateA < endDateB) return 1;
+
+    return 0;
   });
+
 
   const toggleCreateForm = () => {
     setCreateFormVisible((prevVisible) => !prevVisible);
@@ -162,8 +183,9 @@ export default function Home() {
                 <Image
                   src={work.picture}
                   alt={`Image for ${work.title}`}
-                  width={100} height={100}
-                  style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
+                  width={100} // Provide the width property
+                  height={100} // Provide the height property
+                  style={{ borderRadius: '10px' }}
                 />
                 <div className={styles['work-details']}>
                   <div className={styles['work-title']}>{work.title}</div>
@@ -183,8 +205,7 @@ export default function Home() {
                   Close
               </button>
               <div className={styles['work-image']}>
-                <Image src={selectedWork.picture} width={100} height={50} />
-              </div>
+              <Image src={selectedWork.picture} width={100} height={50}/>              </div>
               <h2>Term {selectedWork.semester} </h2>
               <h3>{selectedWork.title}</h3>
               <p>Location: {selectedWork.location}</p>
@@ -263,14 +284,14 @@ export default function Home() {
             <div className={`${styles['no-works-message-s']} ${selectedWork ? styles['hidden'] : ''}`}>
               <div className={styles['approve-title']}>Work Status</div>
               <div className={`${styles['details-info']}`}>
-                <div className={styles['status-buttons']}>
-                  <button onClick={() => handleStatusClick('all')}>All</button>
+                <div className={styles['status-buttons1']}>
+                  <button onClick={() => handleStatusClick('all')}>Status</button>
                   <button onClick={() => handleStatusClick('Applied')}>Applied</button>
                   <button onClick={() => handleStatusClick('Accepted')}>Accepted</button>
                   <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                 </div>
                 {filteredWorks.length === 0 ? (
-                  <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
+                  <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
                 ) : (
                   <div>
                     {filteredWorks
@@ -279,8 +300,7 @@ export default function Home() {
                       .map((work) => (
                         <div key={work.id} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                           <div className={styles['work-image']}>
-                            <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50} />
-                          </div>
+                          <Image src={work.picture} alt={`Work ${index + 1}`} width={100} height={50} />                          </div>
                           <div className={styles['work-title']}>
                             <h3>{work.title}</h3>
                             <div className={styles['unbold']}>
