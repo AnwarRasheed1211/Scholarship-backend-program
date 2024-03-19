@@ -249,7 +249,7 @@ export default function Register() {
               </div>
 
               <div className={styles['work-image']}>
-              <Image src={work.picture} width={100} height={50}/>              </div>
+              <Image src={selectedWork.picture} width={100} height={50}/>              </div>
               <h2>{selectedWork.title}</h2>
               <p>{selectedWork.description}</p>
               <p>Location: {selectedWork.location}</p>
