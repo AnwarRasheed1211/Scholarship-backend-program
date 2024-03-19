@@ -300,7 +300,7 @@ export default function Home() {
                       .map((work) => (
                         <div key={work.id} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                           <div className={styles['work-image']}>
-                          <Image src={work.picture} alt={`Work ${index + 1}`} width={100} height={50} />                          </div>
+                          <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50} />                          </div>
                           <div className={styles['work-title']}>
                             <h3>{work.title}</h3>
                             <div className={styles['unbold']}>

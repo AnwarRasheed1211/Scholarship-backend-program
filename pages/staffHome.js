@@ -563,7 +563,7 @@ export default function Home() {
                     filteredWorks.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                         <div className={styles['work-image']}>
-                        <Image src={work.picture} alt={`Work ${index + 1}`} width={100} height={50} />                        </div>
+                        <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50} />                        </div>
                         <div className={styles['work-title']}>
                             <div>{work.title}</div>
                             <div>{work.hours} Hours</div>
