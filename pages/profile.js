@@ -101,8 +101,8 @@ export default function Profile() {
                           {works
                             .filter(work => work.semester === semester) // Filter works by semester
                             .filter(work => work.workStatus === "Accepted") // Display only works with "Accepted" status
-                            .filter(work => work.studentList.some(student => student.status === 'Completed' || student.status === 'Incompleted'))
                             .filter(work => work.studentList.some(student => student.studentName === data?.user?.name))
+                            .filter(work => work.studentList.some(student => student.status === 'Completed' || student.status === 'Incompleted'))
                             .map(work => (
                               <div key={work._id} className={styles['work-entry']}>
                                 <div className={styles['work-image']}>
