@@ -1,15 +1,15 @@
 import mongoose from 'mongoose';
 
 const workSchema = new mongoose.Schema({
+  semester: String,
   picture: String,
   title: String,
-  datetime: [{
-    start: Date,
-    end: Date,
-    hours: Number,
-  }],
+  start: Date,
+  end: Date,
+  hours: Number,
   location: String,
-  description: String,
+  limit: Number,
+  details: String,
   qualification: String,
   contacts: String,
   studentList: [{
