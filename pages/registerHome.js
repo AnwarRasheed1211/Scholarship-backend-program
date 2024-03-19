@@ -249,7 +249,7 @@ export default function Register() {
               </div>
 
               <div className={styles['work-image']}>
-              <Image src={selectedWork.picture} width={100} height={50}/>              </div>
+              <Image src={work.picture} width={100} height={50}/>              </div>
               <h2>{selectedWork.title}</h2>
               <p>{selectedWork.description}</p>
               <p>Location: {selectedWork.location}</p>
@@ -313,7 +313,7 @@ export default function Register() {
                     filteredWorks.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                         <div className={styles['work-image']}>
-                        <Image src={selectedWork.picture} width={100} height={50}/>                        </div>
+                        <Image src={work.picture} width={100} height={50}/>                        </div>
                         <div className={styles['work-title']}>
                             <div>{work.title}</div>
                             <div>{work.hours} Hours</div>
