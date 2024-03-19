@@ -29,13 +29,22 @@ export default function Profile() {
     fetchData();
   }, []);
 
-  const uniqueSemesters = [...new Set(works.map(work => work.semester))];
+  // Filter works based on the user's status
+  const userWorks = works.filter(work =>
+    work.studentList.some(
+      student =>
+        student.studentName === data?.user?.name &&
+        (student.status === 'Completed' || student.status === 'Incompleted')
+    )
+  );
+
+  // Extract unique semesters from the filtered works
+  const uniqueSemesters = [...new Set(userWorks.map(work => work.semester))];
 
   const totalHoursBySemester = uniqueSemesters.reduce((acc, semester) => {
-    const totalHours = works
+    const totalHours = userWorks
       .filter(work => work.semester === semester)
       .filter(work => work.workStatus === "Accepted")
-      .filter(work => work.studentList.some(student => student.studentName === (data?.user?.name || '')))
       .reduce((sum, work) => {
         const completedHours = work.studentList.reduce((sum, student) => {
           if (student.status === 'Completed') {
@@ -63,12 +72,12 @@ export default function Profile() {
           <div className={styles['profileContent']}>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data?.user?.name}`}
+                {` ${data.user?.name}`}
               </div>
             </div>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data?.user?.email}`}
+                {` ${data.user?.email}`}
               </div>
             </div>
           </div>
@@ -88,7 +97,7 @@ export default function Profile() {
             ) : (
               uniqueSemesters.map(semester => (
                 <div key={semester}>
-                  {works
+                  {userWorks
                     .filter(work => work.semester === semester) // Filter works by semester
                     .filter(work => work.workStatus === "Accepted") // Display only works with "Accepted" status
                     .some(work => work.studentList.some(student => student.status === 'Completed' || student.status === 'Incompleted'))
@@ -98,7 +107,7 @@ export default function Profile() {
                             {semester} | Total Hours: {totalHoursBySemester[semester]} / 60
                         </h3>
                         <div className={styles['details-info']}>
-                          {works
+                          {userWorks
                             .filter(work => work.semester === semester) // Filter works by semester
                             .filter(work => work.workStatus === "Accepted") // Display only works with "Accepted" status
                             .filter(work => work.studentList.some(student => student.studentName === data?.user?.name))
@@ -106,7 +115,7 @@ export default function Profile() {
                             .map(work => (
                               <div key={work._id} className={styles['work-entry']}>
                                 <div className={styles['work-image']}>
-                                  <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50} />
+                                  <Image src={work.picture} width={100} height={50} alt={`Work ${work.id}`  } />
                                 </div>
                                 <div className={styles['work-title']}>
                                   <div>{work.title}</div>
