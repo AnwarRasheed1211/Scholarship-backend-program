@@ -72,12 +72,12 @@ export default function Profile() {
           <div className={styles['profileContent']}>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data.user?.name}`}
+                {` ${data?.user?.name}`}
               </div>
             </div>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data.user?.email}`}
+                {` ${data?.user?.email}`}
               </div>
             </div>
           </div>
