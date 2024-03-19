@@ -4,7 +4,7 @@ import CreateNavBar from '/components/createNavbar';
 import { set } from 'mongoose';
 
 export default function Create() {
-  const url = "http://localhost:3000/api/posts/scholarshipWork";
+  const url = "https://scholarship.vercel.app/api/posts/scholarshipWork";
 
   const [formData, setFormData] = useState({
     semester: "",
