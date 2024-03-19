@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styles from './home.module.css';
 import Image from 'next/image';
+import { useSession, signOut } from 'next-auth/react';
 
 const StaffNavbar = () => {
   const router = useRouter();
