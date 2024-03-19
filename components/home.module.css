@@ -58,6 +58,11 @@
   padding: 1px;
 }
 
+.navBar1 {
+  background-color: #4caf50;
+  padding: 1px;
+}
+
 .li {
   margin: 0 1rem;
 }
@@ -858,6 +863,12 @@
   margin-bottom: 20px;
 }
 
+.status-buttons1 {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
 .status-buttons button {
   background-color: #4CAF50; /* Green */
   border: none;
@@ -872,8 +883,26 @@
   border-radius: 5px;
 }
 
+.status-buttons1 button {
+  background-color: #EF0107; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
 .status-buttons button:hover {
   background-color: #45a049;
+}
+
+.status-buttons1 button:hover {
+  background-color: #EF0107;
 }
 
 .filter-message {
