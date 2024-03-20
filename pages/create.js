@@ -49,15 +49,14 @@ export default function Create() {
     <>
       <CreateNavBar />
       <div className={styles['create-page']}>
-        <h2 className={styles['create-text']}>
+        <h2 class="item1" className={styles['create-text']}>
           Create Scholarship Work
         </h2>
         <div className={styles['parent-container']}>
           <div className={styles['float-child']}>
             <div className={styles['form-container']}>
               <form onSubmit={handleSubmit} className={styles['create-form']}>
-                <div className={styles['form-column']}>
-                  <div class="item3" className={styles['container-form']}>
+              <div className={styles['float-child-left']}>
                     <label htmlFor="title">Semester</label>
                     <input
                       type="text"
@@ -97,7 +96,9 @@ export default function Create() {
                       onChange={handleChange}
                       required
                     />
+                    </div>
 
+                    <div className={styles['float-child-right']}>
                     <label htmlFor="details">Description</label>
                     <textarea
                       id="details"
@@ -130,6 +131,9 @@ export default function Create() {
                       cols="30"
                       required
                     ></textarea>
+                    </div>
+
+                    <div className={styles['flat-container']}>
 
                     <label htmlFor="start">Start Date and Time of Work </label>
                     <input
@@ -160,12 +164,12 @@ export default function Create() {
                       onChange={handleChange}
                       required
                     />
+                   
 
                     <div className={styles['form-button-container']}>
                       <input type="submit" value="Submit" />
                     </div>
-                  </div>
-                </div>
+                    </div>
               </form>
             </div>
           </div>
