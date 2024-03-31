@@ -1,13 +1,9 @@
 import WorkModel from '../../../models/Work'; // adapt the path to your WorkModel
-import mongoose from 'mongoose'; // Import mongoose
 
-export default async function addStudent(req, res) {
-  
-  const { id, studentName, studentEmail, status } = req.body;
+export default async function rejectMessage(req, res) {
+  const { id, studentName, status } = req.query;
 
   console.log('id:', id);
-  console.log('studentName:', studentName);
-  console.log('studentEmail:', studentEmail);
   console.log('status:', status);
 
   try {
@@ -20,38 +16,23 @@ export default async function addStudent(req, res) {
 
     // Check if the user has already applied to the work
     const hasApplied = work.studentList.some(
-      (student) => student.studentName === studentName && student.studentEmail === studentEmail
+      (student) => student.studentName === studentName
     );
 
-    const rejectedStudentIndex = work.studentList.findIndex(
-      (student) => student.status === 'Rejected'
-    );
-
-    if (rejectedStudentIndex !== -1) {
-      work.studentList.splice(rejectedStudentIndex, 1);
-    }
-    
     if (hasApplied) {
       console.log('User has already applied to this work');
       res.status(409).json({ message: 'User has already applied to this work' });
       return;
     }
 
-    if (work.studentList.filter(student => student.status === 'Accepted' || student.status === 'Completed').length >= work.limit) {
+    if (work.studentList.length >= work.limit) {
       console.log('Applicant list for this work is full');
       res.status(409).json({ message: 'Applicant list for this work is full' });
       return;
     }
     
     // Update the studentList array
-    const newStudent = {
-      _id: new mongoose.Types.ObjectId(),
-      studentName,
-      studentEmail,
-      status,
-    };
-
-    work.studentList.push(newStudent);
+    work.studentList.push({ studentName, status });
 
     // Save the updated Work document
     await work.save();
