@@ -5,6 +5,7 @@ import RegisterNavbar from '/components/registerNavbar';
 import styles from '../components/home.module.css';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@nextui-org/react";
 import Modal from '../components/modal-reject';
+import Modal from '../components/modal-rejectdisplay';
 
 export default function Register() {
   const [works, setWorks] = useState([]);
@@ -13,6 +14,7 @@ export default function Register() {
   const [selectedContact, setSelectedContact] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectMessage, setRejectMessage] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [semesterFilter, setSemesterFilter] = useState('');
 
@@ -187,6 +189,18 @@ export default function Register() {
         console.error('Error rejecting work:', error);
         // Handle error
       });
+  };
+
+  const handleViewButtonClick = (event, work) => {
+    event.stopPropagation(); // Prevent event propagation to parent elements
+  
+    // Open the reject modal here
+    setIsRejectModalOpen(true);
+    setRejectMessage(work.rejectMessage); // Assuming rejectMessage is a property of the work object
+  };
+
+  const handleCloseRejectModal = () => {
+    setIsRejectModalOpen(false);
   };
 
   return (
