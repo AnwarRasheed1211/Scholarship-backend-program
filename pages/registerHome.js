@@ -13,7 +13,7 @@ export default function Register() {
   const [selectedWork, setSelectedWork] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRejectModalOpen, setRejectModalOpen] = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectMessage, setRejectMessage] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [semesterFilter, setSemesterFilter] = useState('');
