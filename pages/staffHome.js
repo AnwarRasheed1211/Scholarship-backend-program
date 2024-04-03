@@ -605,7 +605,7 @@ const filteredWorkS = works ? works.filter(work => {
                     <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                     </div>
                     {filteredWorkS.length === 0 ? (
-                    <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
+                    <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
                     ) : (
                     filteredWorkS.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
