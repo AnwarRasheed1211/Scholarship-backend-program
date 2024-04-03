@@ -108,6 +108,14 @@ export default function Register() {
     setRejectModalOpen(true);
   };
 
+  const handleViewButtonClick = (event, work) => {
+    event.stopPropagation(); // Prevent event propagation to parent elements
+  
+    // Open the reject modal here
+    setIsRejectModalOpen(true);
+    setRejectMessage(work.rejectMessage); // Assuming rejectMessage is a property of the work object
+  };
+
   const closeRejectModal = () => {
     setRejectModalOpen(false);
   };
@@ -191,17 +199,9 @@ export default function Register() {
       });
   };
 
-  const handleViewButtonClick = (event, work) => {
-    event.stopPropagation(); // Prevent event propagation to parent elements
   
-    // Open the reject modal here
-    setIsRejectModalOpen(true);
-    setRejectMessage(work.rejectMessage); // Assuming rejectMessage is a property of the work object
-  };
 
-  const handleCloseRejectModal = () => {
-    setIsRejectModalOpen(false);
-  };
+  
 
   return (
     <>
