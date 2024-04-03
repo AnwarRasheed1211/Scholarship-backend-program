@@ -339,6 +339,11 @@ export default function Register() {
                           </div>
                         </div>
                         <div className={styles['work-status']}>
+                            {work.workStatus === 'Rejected' && (
+                                  <button className={styles['view-button']} onClick={(event) => handleViewButtonClick(event, work)}>
+                                    View
+                                  </button>
+                                )}
                             <div>{work.workStatus}</div>
                         </div>
                         </div>
@@ -350,6 +355,8 @@ export default function Register() {
           )}
 
         </div>
+        <Modal isOpen={isRejectModalOpen} onClose={handleCloseRejectModal} rejectMessage={rejectMessage} />
+
       </div>
 
     </>
