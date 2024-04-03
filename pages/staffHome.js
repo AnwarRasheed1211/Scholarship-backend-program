@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link'; // Import Link component from Next.js
 import StaffNavbar from '/components/staffNavbar';
-import StudentModal from '../components/ModalStudent';
+import StudentModal from '@/components/ModalStudent';
 import DeleteModal from '../components/DeleteModal'; // Import your DeleteModal component
 import { useSession } from 'next-auth/react';
+import Modal from '../components/modal-rejectdisplay';
 
 export default function Home() {
   const [works, setWorks] = useState([]);
@@ -18,6 +19,8 @@ export default function Home() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [semesterFilter, setSemesterFilter] = useState('');
   const { data, status } = useSession();
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [rejectMessage, setRejectMessage] = useState('');
   const [isStudentModalOpen, setStudentModalOpen] = useState(false);
   const [appliedStudents, setAppliedStudents] = useState([]);
   const [progressStudents, setProgressStudents] = useState([]);
@@ -340,6 +343,21 @@ const filteredWorkS = works ? works.filter(work => {
     setStudentModalOpen(false);
   };
 
+  
+
+  const handleViewButtonClick = (event, work) => {
+    event.stopPropagation(); // Prevent event propagation to parent elements
+  
+    // Open the reject modal here
+    setIsRejectModalOpen(true);
+    setRejectMessage(work.rejectMessage); // Assuming rejectMessage is a property of the work object
+  };
+  
+
+  const handleCloseRejectModal = () => {
+    setIsRejectModalOpen(false);
+  };
+
   const handleDeleteConfirmed = async () => {
     try {
       const res = await fetch(`/api/delete/${selectedWork._id}`, {
@@ -587,7 +605,7 @@ const filteredWorkS = works ? works.filter(work => {
                     <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                     </div>
                     {filteredWorkS.length === 0 ? (
-                    <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
+                    <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
                     ) : (
                     filteredWorkS.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
@@ -604,6 +622,11 @@ const filteredWorkS = works ? works.filter(work => {
                           </div>
                         </div>
                         <div className={styles['work-status']}>
+                            {work.workStatus === 'Rejected' && (
+                                  <button className={styles['view-button']} onClick={(event) => handleViewButtonClick(event, work)}>
+                                    View
+                                  </button>
+                                )}
                             <div>{work.workStatus}</div>
                         </div>
                         </div>
@@ -611,9 +634,9 @@ const filteredWorkS = works ? works.filter(work => {
                     )}
                 </div>
             </div>
-
           )}
         </div>
+        <Modal isOpen={isRejectModalOpen} onClose={handleCloseRejectModal} rejectMessage={rejectMessage} />
       </div>
     </>
   );

@@ -219,9 +219,8 @@ export default function Register() {
             >
               <Image
                 src={work.picture}
-                width={100} height={100}
                 alt={`Image for ${work.title}`}
-
+                width={100} height={100}
                 style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
               />
               <div className={styles['work-details']}>
@@ -263,7 +262,7 @@ export default function Register() {
               </div>
 
               <div className={styles['work-image']}>
-                  <Image src={selectedWork.picture} width={100} height={50}/>
+                  <Image width={100} height={50} src={selectedWork.picture}/>
               </div>
               <h2>{selectedWork.title}</h2>
               <p>Limit No of Student: {selectedWork.limit}</p>
@@ -323,12 +322,12 @@ export default function Register() {
                     <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                     </div>
                     {filteredWorks.length === 0 ? (
-                    <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
+                    <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
                     ) : (
                     filteredWorks.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                         <div className={styles['work-image']}>
-                            <Image src={work.picture} alt={`Work ${index + 1}`} width={100} height={50} />
+                            <Image width={100} height={50} src={work.picture} alt={`Work ${index + 1}`} />
                         </div>
                         <div className={styles['work-details']}>
                           <div className={styles['ROterm-box1']}>
