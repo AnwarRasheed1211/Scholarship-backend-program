@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../styles/Modal.module.css';
 
-const Modal = ({ isOpen, onClose, rejectMessage }) => {
+const ModalRejectDisplay = ({ isOpen, onClose, rejectMessage }) => {
   if (!isOpen) return null;
 
   return (
