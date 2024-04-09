@@ -13,8 +13,7 @@ export default function Register() {
   const [selectedWork, setSelectedWork] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [rejectMessage, setRejectMessage] = useState('');
+  const [isRejectModalOpen, setRejectModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [semesterFilter, setSemesterFilter] = useState('');
 
@@ -104,20 +103,12 @@ export default function Register() {
   };
 
 
-  const handleViewButtonClick = (event, work) => {
-    event.stopPropagation(); // Prevent event propagation to parent elements
-  
-    // Open the reject modal here
-    setIsRejectModalOpen(true);
-    setRejectMessage(work.rejectMessage); // Assuming rejectMessage is a property of the work object
+  const openRejectModal = () => {
+    setRejectModalOpen(true);
   };
-  
 
-  
-
-
-  const handleCloseRejectModal = () => {
-    setIsRejectModalOpen(false);
+  const closeRejectModal = () => {
+    setRejectModalOpen(false);
   };
 
   if (isLoading) {
