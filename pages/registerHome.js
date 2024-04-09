@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import RegisterNavbar from '/components/registerNavbar';
 import styles from '../components/home.module.css';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue } from "@nextui-org/react";
-import Modal from '../components/modal-rejectdisplay';
+import ModalRejectDisplay from '../components/modal-rejectdisplay';
 import Modal from '../components/modal-reject';
 
 
@@ -370,7 +370,7 @@ export default function Register() {
           )}
 
         </div>
-        <Modal isOpen={isRejectModalOpen} onClose={handleCloseRejectModal} rejectMessage={rejectMessage} />
+        <ModalRejectDisplay isOpen={isRejectModalOpen} onClose={handleCloseRejectModal} rejectMessage={rejectMessage} />
 
       </div>
 
