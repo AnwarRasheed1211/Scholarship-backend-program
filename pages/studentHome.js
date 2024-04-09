@@ -116,13 +116,35 @@ export default function Home() {
   };
   
   
-  const filteredWorks = works ? works.filter(work => {
-    if (selectedStatus === 'all') {
-      return true;
-    }
-    // Check if any student in the studentList array has the selectedStatus and if the student name matches the current user's name
-    return work.studentList.some(student => student.status === selectedStatus && student.studentName === data?.user?.name);
-  }) : [];
+  const filteredWorks = works
+  ? works
+      .filter(work => {
+        if (selectedStatus === 'all') {
+          return true;
+        }
+        // Check if any student in the studentList array has the selectedStatus and if the student name matches the current user's name
+        return work.studentList.some(
+          student => student.status === selectedStatus && student.studentName === data?.user?.name
+        );
+      })
+      .sort((a, b) => {
+        const startDateA = new Date(a.start);
+        const startDateB = new Date(b.start);
+        const endDateA = new Date(a.end);
+        const endDateB = new Date(b.end);
+
+        // Compare start dates
+        if (startDateA > startDateB) return -1;
+        if (startDateA < startDateB) return 1;
+
+        // If start dates are equal, compare end dates
+        if (endDateA > endDateB) return -1;
+        if (endDateA < endDateB) return 1;
+
+        return 0;
+      })
+  : [];
+
 
   
   const handleStatusClick = (status) => {
@@ -234,7 +256,7 @@ export default function Home() {
             <div className={styles['filter-box']}>
               {/* Design your filter box here */}
               <input
-                type="text"
+                type="number"
                 placeholder="Enter working hours (e.g 3/4/5)"
                 value={hoursFilter}
                 onChange={handleHoursFilterChange}
@@ -407,7 +429,7 @@ export default function Home() {
                   <button onClick={() => handleStatusClick('Rejected')}>Rejected</button>
                 </div>
                 {filteredWorks.length === 0 ? (
-                  <div className={styles['filter-message']}>No works with the status {selectedStatus} yet.</div>
+                  <div className={styles['filter-message']}>No works with the status "{selectedStatus}" yet.</div>
                 ) : (
                   <div>
                     {filteredWorks
