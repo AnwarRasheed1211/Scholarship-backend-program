@@ -26,4 +26,4 @@ const ModalRejectDisplay = ({ isOpen, onClose, rejectMessage }) => {
   );
 };
 
-export default Modal;
+export default ModalRejectDisplay;
