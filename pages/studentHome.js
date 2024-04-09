@@ -55,24 +55,24 @@ export default function Home() {
   const handleWorkClick = (workId) => {
     setSelectedWork(works.find((work) => work._id === workId));
   };
-
+  
   const url = "http://localhost:3000/api/posts/scholarshipWork";
-
+  
   const applyWork = async () => {
     if (!data?.user) {
       console.error("User not logged in");
       return;
     }
-
+  
     const studentName = `${data.user?.name}`; // assuming that data.user has a 'name' property
-    const studentEmail = `${data.user?.email}`;
+    const studentEmail = `${data.user?.email}`; 
     const workId = selectedWork._id;
     const status = 'Applied';
-
+  
     console.log('studentName:', studentName);
     console.log('studentEmail:', studentEmail);
     console.log('status:', status);
-
+  
     try {
       // Modify the fetch request to use the prepared query parameters
       const res = await fetch(`/api/posts/addStudent`, {
@@ -88,8 +88,8 @@ export default function Home() {
           status: status
         }),
       });
-
-
+      
+  
       if (!res.ok) {
         const { message } = await res.json();
         console.error(message);
@@ -109,13 +109,13 @@ export default function Home() {
           }
         });
       }
-
+  
     } catch (error) {
       console.error('Failed to apply work:', error);
     }
   };
-
-
+  
+  
   const filteredWorks = works ? works.filter(work => {
     if (selectedStatus === 'all') {
       return true;
@@ -124,7 +124,7 @@ export default function Home() {
     return work.studentList.some(student => student.status === selectedStatus && student.studentName === data?.user?.name);
   }) : [];
 
-
+  
   const handleStatusClick = (status) => {
     setSelectedStatus(status);
   };
@@ -144,44 +144,54 @@ export default function Home() {
     return `${year}-${month}-${day}`;
   };
 
+  const formatdate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getUTCDate().toString().padStart(2, '0'); // Add leading zero if needed
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+    const year = date.getUTCFullYear();
+    const hours = date.getUTCHours().toString().padStart(2, '0'); // Add leading zero if needed
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0'); // Add leading zero if needed
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
+  };
+  
   const filteredWorksByFilters = works
-    .filter((work) => {
-      const matchesHours = !hoursFilter || work.hours === parseInt(hoursFilter);
-      const matchesStatus = work.workStatus === "Accepted";
-      return matchesHours && matchesStatus;
-    })
-    .filter((work) => {
-      const matchesSemester = !semesterFilter || work.semester === semesterFilter;
-      return matchesSemester;
-    })
-    .filter((work) => {
-      const matchesLocation = !locationFilter || work.location.toLowerCase().includes(locationFilter.toLowerCase());
-      return matchesLocation;
-    })
-    .filter((work) => {
-      const matchesStartDate = !startDateFilter || formatDate(work.start) === startDateFilter;
-      return matchesStartDate;
-    })
-    .filter((work) => {
-      const matchesEndDate = !endDateFilter || formatDate(work.end) === endDateFilter;
-      return matchesEndDate;
-    })
-    .sort((a, b) => {
-      const startDateA = new Date(a.start);
-      const startDateB = new Date(b.start);
-      const endDateA = new Date(a.end);
-      const endDateB = new Date(b.end);
+  .filter((work) => {
+    const matchesHours = !hoursFilter || work.hours === parseInt(hoursFilter);
+    const matchesStatus = work.workStatus === "Accepted";
+    return matchesHours && matchesStatus;
+  })
+  .filter((work) => {
+    const matchesSemester = !semesterFilter || work.semester === semesterFilter;
+    return matchesSemester;
+  })
+  .filter((work) => {
+    const matchesLocation = !locationFilter || work.location.toLowerCase().includes(locationFilter.toLowerCase());
+    return matchesLocation;
+  })
+  .filter((work) => {
+    const matchesStartDate = !startDateFilter || formatDate(work.start) === startDateFilter;
+    return matchesStartDate;
+  })
+  .filter((work) => {
+    const matchesEndDate = !endDateFilter || formatDate(work.end) === endDateFilter;
+    return matchesEndDate;
+  })
+  .sort((a, b) => {
+    const startDateA = new Date(a.start);
+    const startDateB = new Date(b.start);
+    const endDateA = new Date(a.end);
+    const endDateB = new Date(b.end);
 
-      // Compare start dates
-      if (startDateA > startDateB) return -1;
-      if (startDateA < startDateB) return 1;
+    // Compare start dates
+    if (startDateA > startDateB) return -1;
+    if (startDateA < startDateB) return 1;
 
-      // If start dates are equal, compare end dates
-      if (endDateA > endDateB) return -1;
-      if (endDateA < endDateB) return 1;
+    // If start dates are equal, compare end dates
+    if (endDateA > endDateB) return -1;
+    if (endDateA < endDateB) return 1;
 
-      return 0;
-    });
+    return 0;
+  });
 
   const handleHoursFilterChange = (e) => {
     setHoursFilter(e.target.value);
@@ -210,7 +220,7 @@ export default function Home() {
 
   return (
     <>
-      <NavBar />
+    <NavBar />
       <div className={styles.line} />
       <div className={styles['work-header']}>
         <h1 className={styles['textwork']}>WORK AVAILABLE</h1>
@@ -266,7 +276,7 @@ export default function Home() {
       </div>
       <div className={styles['home-page']}>
         <div className={styles['works-list']}>
-          {filteredWorksByFilters.length === 0 ? (
+        {filteredWorksByFilters.length === 0 ? (
             <div className={styles['no-works-message']}>Work with specified hours not available</div>
           ) : (
             filteredWorksByFilters.map((work) => (
@@ -280,7 +290,6 @@ export default function Home() {
                   src={work.picture}
                   alt={`Image for ${work.title}`}
                   width={100} height={100}
-
                   style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
                 />
                 <div className={styles['work-details']}>
@@ -291,7 +300,7 @@ export default function Home() {
                   <div>Place: {work.location}</div>
                   <div className={styles['work-scholarship']}>
                     <h3>Start date</h3>
-                    <div className={styles['work-scholarhour']}>{work.start}</div>
+                    <div className={styles['work-scholarhour']}>{formatdate(work.start)}</div>
                     <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours</h4>
                   </div>
                 </div>
@@ -303,42 +312,41 @@ export default function Home() {
 
         <div className={styles['work-details']}>
           {selectedWork ? (
-            <>
+            <>  
               <button className={styles['close-button']} onClick={handleCloseClick}>
-                Close
+                  Close
               </button>
               <div className={styles['work-image']}>
-                <Image src={selectedWork.picture} width={100} height={50}
-                />
+                <Image src={selectedWork.picture} width={100} height={50} />
               </div>
               <h2>Term {selectedWork.semester} </h2>
               <div className={styles['work-scholarship']}>
                 <h3 className={styles['work-title']}>{selectedWork.title}</h3>
                 <p>Location: {selectedWork.location}</p>
               </div>
-
+              
               <div className={styles['details-info']}>
                 <h3>Date & Time Schedule</h3>
-                <ul>
-                  <div>
-                    {selectedWork.start} to {selectedWork.end}
-                    {selectedWork.hours && (
-                      <span> | Scholarship Hours: {selectedWork.hours}</span>
-                    )}
-                  </div>
-                </ul>
+                  <ul>
+                      <div>
+                      {formatdate(selectedWork.start)} to {formatdate(selectedWork.end)}
+                        {selectedWork.hours && (
+                          <span> | Scholarship Hours: {selectedWork.hours}</span>
+                        )}
+                      </div>
+                  </ul>
               </div>
-
-
+              
+              
               <div className={styles['contact-section']}>
                 <div className={styles['title-container']}>
-                  <h3>Student Applicants: {selectedWork.studentList.filter(student => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted').length} of {selectedWork.limit}</h3>
+                    <h3>Student Applicants: {selectedWork.studentList.filter(student => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted').length} of {selectedWork.limit}</h3>
                 </div>
-                <div className={styles['details-info']}>
+                <div className={styles['details-info']}> 
                   <div>
                     <ol>
                       {selectedWork.studentList
-                        // Filter out students with status 'Applied'
+                         // Filter out students with status 'Applied'
                         .map((student, index) => (
                           <li key={student.id} className={styles['student-entry']}>
                             {index + 1}. {student.studentName}  ( {student.status} )
@@ -348,13 +356,13 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
+              
 
 
               <div className={styles['button-container']}>
-                <button className={styles['apply-button']} onClick={applyWork}>
-                  Apply
-                </button>
+              <button className={styles['apply-button']} onClick={applyWork}>
+                Apply
+              </button>
               </div>
 
               <div className={styles['contact-section']}>
@@ -409,8 +417,7 @@ export default function Home() {
                       .map((work) => (
                         <div key={work.id} className={styles['work-entry1']} onClick={() => handleWorkClick(work._id)}>
                           <div className={styles['work-image']}>
-                            <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50}
-                            />
+                            <Image src={work.picture} alt={`Work ${work.id}`} width={100} height={50} />
                           </div>
                           <div className={styles['work-details']}>
                             <div className={styles['term-box1']}>
@@ -419,17 +426,17 @@ export default function Home() {
                             <div className={styles['work-title']}>{work.title}</div>
                             <div>Location: {work.location}</div>
                             <div className={styles['work-scholarship']}>
-                              <div className={styles['unbold']}>
-                                <li>
-                                  {work.start} to {work.end}
-                                  {work.hours && (
-                                    <span> | Scholarship Hours: {work.hours}</span>
-                                  )}
-                                </li>
-                              </div>
+                                <div className={styles['unbold']}>
+                                  <li>
+                                  {formatdate(work.start)} to {formatdate(work.end)}
+                                    {work.hours && (
+                                      <span> | Scholarship Hours: {work.hours}</span>
+                                    )}
+                                  </li>
+                                </div>
                             </div>
                           </div>
-
+                          
                           <div className={styles['work-status']}>
                             <div>
                               {work.studentList.map((student, idx) => (

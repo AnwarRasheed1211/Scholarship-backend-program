@@ -17,13 +17,17 @@ export default function Home() {
   const [selectedStudentApplied, setSelectedStudentApplied] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const [semesterFilter, setSemesterFilter] = useState('');
   const { data, status } = useSession();
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectMessage, setRejectMessage] = useState('');
   const [isStudentModalOpen, setStudentModalOpen] = useState(false);
   const [appliedStudents, setAppliedStudents] = useState([]);
   const [progressStudents, setProgressStudents] = useState([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [locationFilter, setLocationFilter] = useState('');
+  const [startDateFilter, setStartDateFilter] = useState('');
+  const [endDateFilter, setEndDateFilter] = useState('');
+  const [semesterFilter, setSemesterFilter] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -281,27 +285,34 @@ export default function Home() {
 // Filter works by the organizer's email address
 const filteredWorks = works ? works.filter(work => work.organizer === userEmail) : [];
 
-const filteredWorkS = works ? works.filter(work => {
-  if (selectedStatus === 'all') {
-    return work.organizer === userEmail; // Display works created by the current user
-  }
-  return work.workStatus === selectedStatus && work.organizer === userEmail; // Filter works by both status and organizer
-}) : [];
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  let month = (date.getMonth() + 1).toString();
+  month = month.length === 1 ? '0' + month : month; // Add leading zero if needed
+  let day = date.getDate().toString();
+  day = day.length === 1 ? '0' + day : day; // Add leading zero if needed
+  return `${year}-${month}-${day}`;
+};
 
-// Use filteredWorks instead of works in your JSX rendering
+const formatdate = (dateString) => {
+  const date = new Date(dateString);
+  const day = date.getUTCDate().toString().padStart(2, '0'); // Add leading zero if needed
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+  const year = date.getUTCFullYear();
+  const hours = date.getUTCHours().toString().padStart(2, '0'); // Add leading zero if needed
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0'); // Add leading zero if needed
+  return `${day}/${month}/${year} - ${hours}:${minutes}`;
+};
 
-  const handleStatusClick = (status) => {
-    setSelectedStatus(status);
-  };
-  
-  const handleSemesterFilterChange = (e) => {
-    setSemesterFilter(e.target.value);
-  };
-
-  const filteredWorksBySemester = semesterFilter
+const filteredWorkS = works
   ? works
-      .filter((work) => work.semester === semesterFilter)
-      .filter((work) => work.organizer === userEmail)
+      .filter((work) => {
+        if (selectedStatus === 'all') {
+          return work.organizer === userEmail;
+        }
+        return work.workStatus === selectedStatus && work.organizer === userEmail;
+      })
       .sort((a, b) => {
         const startDateA = new Date(a.start);
         const startDateB = new Date(b.start);
@@ -318,22 +329,68 @@ const filteredWorkS = works ? works.filter(work => {
 
         return 0;
       })
-  : works.sort((a, b) => {
-        const startDateA = new Date(a.start);
-        const startDateB = new Date(b.start);
-        const endDateA = new Date(a.end);
-        const endDateB = new Date(b.end);
+  : [];
 
-        // Compare start dates
-        if (startDateA > startDateB) return -1;
-        if (startDateA < startDateB) return 1;
 
-        // If start dates are equal, compare end dates
-        if (endDateA > endDateB) return -1;
-        if (endDateA < endDateB) return 1;
+// Use filteredWorks instead of works in your JSX rendering
 
-        return 0;
-      });
+  const handleStatusClick = (status) => {
+    setSelectedStatus(status);
+  };
+  
+  const filteredWorksByFilters = works
+  .filter((work) => {
+    const matchesSemester = !semesterFilter || work.semester === semesterFilter;
+    return matchesSemester;
+  })
+  .filter((work) => {
+    const matchesLocation = !locationFilter || (work.location && work.location.toLowerCase() === locationFilter.toLowerCase());
+    return matchesLocation;
+  })
+  .filter((work) => {
+    const matchesStartDate = !startDateFilter || formatDate(work.start) === startDateFilter;
+    return matchesStartDate;
+  })
+  .filter((work) => {
+    const matchesEndDate = !endDateFilter || formatDate(work.end) === endDateFilter;
+    return matchesEndDate;
+  })
+  .sort((a, b) => {
+    const startDateA = new Date(a.start);
+    const startDateB = new Date(b.start);
+    const endDateA = new Date(a.end);
+    const endDateB = new Date(b.end);
+
+    // Compare start dates
+    if (startDateA > startDateB) return -1;
+    if (startDateA < startDateB) return 1;
+
+    // If start dates are equal, compare end dates
+    if (endDateA > endDateB) return -1;
+    if (endDateA < endDateB) return 1;
+
+    return 0;
+  });
+
+  const toggleFilterBox = () => {
+    setFilterOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleSemesterFilterChange = (e) => {
+    setSemesterFilter(e.target.value);
+  };
+
+  const handleLocationFilterChange = (e) => {
+    setLocationFilter(e.target.value);
+  };
+
+  const handleStartDateFilterChange = (e) => {
+    setStartDateFilter(e.target.value);
+  };
+
+  const handleEndDateFilterChange = (e) => {
+    setEndDateFilter(e.target.value);
+  };
 
   const openStudentModal= () => {
     setStudentModalOpen(true);
@@ -392,18 +449,52 @@ const filteredWorkS = works ? works.filter(work => {
       <div className={styles['work-header']}>
         <h1 className={styles['textwork']}>WORK</h1>
         {/* Semester Filter Input */}
-        <input
-          type="text"
-          placeholder="Enter semester (e.g., 2/2023)"
-          value={semesterFilter}
-          onChange={handleSemesterFilterChange}
-          className={styles['semester-filter-input']}
-        />
+        <div className={styles['filter-container']}>
+          <button onClick={toggleFilterBox} className={styles['filter-button1']}>
+            Filter
+          </button>
+          {/* Filter Box */}
+          {filterOpen && (
+            <div className={styles['filter-box']}>
+              {/* Design your filter box here */}
+              <input
+                type="text"
+                placeholder="Enter semester"
+                value={semesterFilter}
+                onChange={handleSemesterFilterChange}
+                className={styles['filter-input']}
+              />
+              <input
+                type="text"
+                placeholder="Enter location"
+                value={locationFilter}
+                onChange={handleLocationFilterChange}
+                className={styles['filter-input']}
+              />
+              <div>Start Date</div>
+              <input
+                type="date"
+                placeholder="Start date"
+                value={startDateFilter}
+                onChange={handleStartDateFilterChange}
+                className={styles['filter-input']}
+              />
+              <div>End Date</div>
+              <input
+                type="date"
+                placeholder="End date"
+                value={endDateFilter}
+                onChange={handleEndDateFilterChange}
+                className={styles['filter-input']}
+              />
+            </div>
+          )}
+        </div>
       </div>
       
       <div className={styles['home-page']}>
         <div className={styles['works-list']}>
-        {filteredWorksBySemester.length === 0 ? (
+        {filteredWorksByFilters.length === 0 ? (
           <div className={styles['no-works-message']}>---------- Work not available ----------</div>
         ) : (
         filteredWorks.map((work) => (
@@ -427,7 +518,7 @@ const filteredWorkS = works ? works.filter(work => {
                 <div>Place: {work.location}</div>
                 <div className={styles['work-scholarship']}>
                     <h3>Start date</h3>
-                    <div className={styles['work-scholarhour']}>{work.start}</div>
+                    <div className={styles['work-scholarhour']}>{formatdate(work.start)}</div>
                     <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours</h4>
                 </div>
               </div>
@@ -443,7 +534,7 @@ const filteredWorkS = works ? works.filter(work => {
               </div>
 
               <div className={styles['work-image']}>
-                  <Image width={100} height={50} src={selectedWork.picture}/>
+                  <Image src={selectedWork.picture} width={100} height={50}/>
               </div>
               <h2>Term {selectedWork.semester} </h2>
               <div className={styles['work-scholarship']}>
@@ -454,7 +545,7 @@ const filteredWorkS = works ? works.filter(work => {
                 <h3>Date & Time Schedule</h3>
                 <ul>
                     <div>
-                      {selectedWork.start} to {selectedWork.end}
+                    {formatdate(selectedWork.start)} to {formatdate(selectedWork.end)}
                       {selectedWork.hours && (
                         <span> | Scholarship Hours: {selectedWork.hours}</span>
                       )}
@@ -610,7 +701,7 @@ const filteredWorkS = works ? works.filter(work => {
                     filteredWorkS.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                         <div className={styles['work-image']}>
-                            <Image width={100} height={50} src={work.picture} alt={`Work ${index + 1}`} />
+                            <Image src={work.picture} alt={`Work ${index + 1}`} width={100} height={50} />
                         </div>
                         <div className={styles['work-details']}>
                           <div className={styles['ROterm-box1']}>
@@ -618,7 +709,7 @@ const filteredWorkS = works ? works.filter(work => {
                           </div>
                           <div className={styles['work-scholarship']}>
                           <div className={styles['work-title']}>{work.title}</div>
-                          <div>Place: {work.location} |  Start date: {work.start} | {work.hours} Given Hours</div>
+                          <div>Place: {work.location} |  Start date: {formatdate(work.start)} | {work.hours} Given Hours</div>
                           </div>
                         </div>
                         <div className={styles['work-status']}>
