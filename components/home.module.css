@@ -217,9 +217,6 @@
   z-index: 1000;
 }
 
-
-
-
 .work-item {
   display: grid;
   grid-template-columns: 13ch 30ch;
@@ -258,13 +255,6 @@
 .work-item1:hover,
 .work-item1:focus {
   border-color: red; /* Change the border color to blue */
-}
-
-.ROterm-box3 {
-  border: 2px solid red; /* Example border style */
-  padding: 2px; /* Example padding */
-  margin-top: 10px; /* Example margin */
-  border-radius: 5px
 }
 
 .work-content {
@@ -830,6 +820,13 @@
 
 .ROterm-box2 {
   border: 2px solid green; /* Example border style */
+  padding: 2px; /* Example padding */
+  margin-top: 10px; /* Example margin */
+  border-radius: 5px
+}
+
+.ROterm-box3 {
+  border: 2px solid red; /* Example border style */
   padding: 2px; /* Example padding */
   margin-top: 10px; /* Example margin */
   border-radius: 5px
