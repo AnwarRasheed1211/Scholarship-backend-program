@@ -222,21 +222,21 @@
 
 .work-item {
   display: grid;
-  /* Use flexbox for layout */
   grid-template-columns: 13ch 30ch;
   grid-template-rows: 18ch;
-  align-items: center;
-  /* Vertically align content */
+  align-items: center; /* Align content to the top */
   grid-gap: 10px;
   background-color: #E0F2E9; /* Set the background color of the box */
-  padding: 20px; /* Add padding inside the box */
-  border-radius: 10px; /* Add rounded corners to the box */
-  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 10px;
   border: thick solid transparent; /* Add a transparent border initially */
+  transition: border-color 0.3s ease; /* Smooth transition on hover/focus */
 }
 
+.work-item:hover,
 .work-item:focus {
-  border-color: green; /* Change the border color to blue */
+  border-color: green; /* Change the border color to green on hover/focus */
 }
 
 .work-item1 {
@@ -252,10 +252,19 @@
   border-radius: 10px; /* Add rounded corners to the box */
   margin-bottom: 20px;
   border: thick solid transparent; /* Add a transparent border initially */
+  transition: border-color 0.3s ease; /* Smooth transition on hover/focus */
 }
 
+.work-item1:hover,
 .work-item1:focus {
   border-color: red; /* Change the border color to blue */
+}
+
+.ROterm-box3 {
+  border: 2px solid red; /* Example border style */
+  padding: 2px; /* Example padding */
+  margin-top: 10px; /* Example margin */
+  border-radius: 5px
 }
 
 .work-content {
