@@ -4,34 +4,32 @@ import styles from './home.module.css';
 import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
 
-const StaffNavbar = () => {
+const RegisterNavbar = () => {
   const router = useRouter();
-  const { data: session } = useSession(); // Fetch the session
+  const { data: session } = useSession();
 
   const handleLogout = async () => {
     console.log('Session before signOut:', session); // Log the session before signOut
-    await signOut({ callbackUrl: '/' });
+    await signOut({ callbackUrl: '/' }); // Sign the user out and redirect to the home page
   };
 
+  if (router.pathname === '/staffhouse') {
+    console.log('Session:', session);
 
-  if (router.pathname === '/staffHome') {
     return (
       <nav className={styles.navBar1}>
         <div className={styles.logo}>
           <div className={styles.logoContainer}>
-          <Image src="/abac_logo.png" alt="Logo" width={80} height={80} />
-              <div className={styles.logoText}>
-                AU Scholarship Organizer
-              </div>
+            <Image src="/abac_logo.png" alt="Logo" width={80} height={80} />
+            <div className={styles.logoText}>AU Scholarship Organizer</div>
           </div>
           <div className={styles['imge-container']}>
-          {session ? (
-              <div className={styles['text2']} onClick={handleLogout}>Log Out</div>
-            ) : null}
-            <Image src="/work_upload.png" alt="Another Image" width={35} height={35} />
+            <Link href={'/menu'}>
+              <div className={styles['text2']}>Back</div>
+            </Link>
           </div>
           <div className={styles['text-container']}>
-          <Link href={'/create'}>
+          <Link href={'/registerCreate'}>
           <div className={styles['text']}>Create Scholarship Work</div>
           </Link>
           </div>
@@ -43,4 +41,4 @@ const StaffNavbar = () => {
   return null;
 };
 
-export default StaffNavbar;
+export default RegisterNavbar;
