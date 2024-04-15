@@ -57,6 +57,16 @@ export default function Profile() {
     return { ...acc, [semester]: totalHours };
   }, {});
 
+  const formatdate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getUTCDate().toString().padStart(2, '0'); // Add leading zero if needed
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+    const year = date.getUTCFullYear();
+    const hours = date.getUTCHours().toString().padStart(2, '0'); // Add leading zero if needed
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0'); // Add leading zero if needed
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
+  };
+
   return (
     <>
       <ProfileNavbar />
@@ -72,12 +82,12 @@ export default function Profile() {
           <div className={styles['profileContent']}>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data?.user?.name}`}
+                {` ${data.user?.name}`}
               </div>
             </div>
             <div className={styles['infoBox']}>
               <div className={styles['infoTitle']}>
-                {` ${data?.user?.email}`}
+                {` ${data.user?.email}`}
               </div>
             </div>
           </div>
@@ -104,7 +114,7 @@ export default function Profile() {
                     ? (
                       <div className={styles['details-info']}>
                         <h3 className={styles['textwork2']}>
-                            {semester} | Total Hours: {totalHoursBySemester[semester]} / 60
+                            Term {semester} | Total Hours: {totalHoursBySemester[semester]} / 60
                         </h3>
                         <div className={styles['details-info']}>
                           {userWorks
@@ -113,16 +123,16 @@ export default function Profile() {
                             .filter(work => work.studentList.some(student => student.studentName === data?.user?.name))
                             .filter(work => work.studentList.some(student => student.status === 'Completed' || student.status === 'Incompleted'))
                             .map(work => (
-                              <div key={work._id} className={styles['work-entry']}>
+                              <div key={work._id} className={styles['work-entry1']}>
                                 <div className={styles['work-image']}>
-                                  <Image src={work.picture} width={100} height={50} alt={`Work ${work.id}`  } />
+                                  <img src={work.picture} alt={`Work ${work.id}`} />
                                 </div>
                                 <div className={styles['work-title']}>
                                   <div>{work.title}</div>
                                   <div className={styles['unbold']}>
                                     <ul>
                                       <li>
-                                        {work.start} to {work.end}
+                                        {formatdate(work.start)} to {formatdate(work.end)}
                                         {work.hours && (
                                           <span> | Scholarship Hours: {work.hours}</span>
                                         )}
