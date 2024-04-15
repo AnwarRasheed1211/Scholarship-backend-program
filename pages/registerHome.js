@@ -334,9 +334,10 @@ export default function Register() {
               className={styles['work-item']}
               tabIndex="1"
             >
-              <img
+              <Image
                 src={work.picture}
                 alt={`Image for ${work.title}`}
+                width={100} height={100}
                 style={{ width: '100px', height: 'auto', borderRadius: '10px' }}
               />
               <div className={styles['work-details']}>
@@ -377,7 +378,7 @@ export default function Register() {
               </div>
 
               <div className={styles['work-image']}>
-                  <img src={selectedWork.picture}/>
+                  <Image src={selectedWork.picture} width={100} height={50} />
               </div>
               <h2>{selectedWork.title}</h2>
               <p>Limit No of Student: {selectedWork.limit}</p>
@@ -442,7 +443,7 @@ export default function Register() {
                     filteredWorks.map((work, index) => (
                         <div key={index} className={styles['work-entry']} onClick={() => handleWorkClick(work._id)}>
                         <div className={styles['work-image']}>
-                            <img src={work.picture} alt={`Work ${index + 1}`} />
+                            <Image src={work.picture} alt={`Work ${index + 1}`} width={100} height={50} />
                         </div>
                         <div className={styles['work-details']}>
                           <div className={styles['ROterm-box1']}>

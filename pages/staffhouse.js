@@ -3,7 +3,7 @@ import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link'; // Import Link component from Next.js
-import StaffNavbar from '/components/staffNavbar';
+import StaffNavbar from '/components/organizerNavbar';
 import StudentModal from '@/components/ModalStudent';
 import DeleteModal from '../components/DeleteModal'; // Import your DeleteModal component
 import { useSession } from 'next-auth/react';

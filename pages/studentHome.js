@@ -324,7 +324,7 @@ export default function Home() {
                     <h3>Start date</h3>
                     <div className={styles['work-scholarhour']}>{formatdate(work.start)}</div>
                     <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours</h4>
-</div>
+                  </div>
                 </div>
               </div>
             ))
@@ -413,7 +413,7 @@ export default function Home() {
 
                 <div className={styles['details-info']}>
                   <h3>Contact</h3>
-                  <p>{selectedWork.contacts}</p>
+                  <p>{selectedWork.organizer}</p>
                 </div>
               </div>
 
