@@ -435,7 +435,7 @@ export default function Home() {
                     {filteredWorks
                       .filter((work) => work.workStatus === "Accepted")
                       .filter(work => work.studentList.some(student => student.studentName === data?.user?.name))
-                      .filter(work => !work.studentList.some(student => student.status === "Completed" || student.status === "Incomplete"))
+                      .filter(work => !work.studentList.some(student => student.status === "Completed" || student.status === "Incompleted"))
                       .map((work) => (
                         <div key={work.id} className={styles['work-entry1']} onClick={() => handleWorkClick(work._id)}>
                           <div className={styles['work-image']}>
