@@ -5,7 +5,7 @@ import { set } from 'mongoose';
 import { useSession } from 'next-auth/react';
 
 export default function Create() {
-  const url = "http://localhost:3000/api/posts/scholarshipWork";
+  const url = "https://scholarship.vercel.app/api/posts/scholarshipWork";
   const { data, status } = useSession();
   
   const [formData, setFormData] = useState({
