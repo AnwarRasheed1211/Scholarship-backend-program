@@ -219,7 +219,7 @@
 
 .work-item {
   display: grid;
-  grid-template-columns: 13ch 30ch;
+  grid-template-columns: 15ch 30ch;
   grid-template-rows: 18ch;
   align-items: center; /* Align content to the top */
   grid-gap: 10px;
@@ -788,8 +788,13 @@
 
 .term-box {
   border: 2px solid red; /* Example border style */
-  padding: 10px; /* Example padding */
   margin-bottom: 10px; /* Example margin */
+  border-radius: 5px
+}
+
+.ROterm-box {
+  border: 2px solid green; /* Example border style */
+  margin-bottom: 5px; /* Example margin */
   border-radius: 5px
 }
 
