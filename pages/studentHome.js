@@ -176,6 +176,7 @@ export default function Home() {
     return `${day}/${month}/${year} - ${hours}:${minutes}`;
   };
   
+  
   const filteredWorksByFilters = works
   .filter((work) => {
     const matchesHours = !hoursFilter || work.hours === parseInt(hoursFilter);

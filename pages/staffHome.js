@@ -322,6 +322,7 @@ const formatdate = (dateString) => {
   return `${day}/${month}/${year} - ${hours}:${minutes}`;
 };
 
+
 const filteredWorkS = works
   ? works
       .filter((work) => {
@@ -552,7 +553,7 @@ const filteredWorkS = works
               </div>
 
               <div className={styles['work-image']}>
-                  <Image src={selectedWork.picture} width={100} height={50} />
+                  <Image src={selectedWork.picture} width={100} height={50}/>
               </div>
               <h2>Term {selectedWork.semester} </h2>
               <div className={styles['work-scholarship']}>

@@ -97,7 +97,7 @@ export default function Register() {
     const hours = date.getHours().toString().padStart(2, '0'); // Add leading zero if needed
     const minutes = date.getMinutes().toString().padStart(2, '0'); // Add leading zero if needed
     return `${day}/${month}/${year} - ${hours}:${minutes}`;
-  };
+  };  
   
   const filteredWorksByFilters = works
   .filter((work) => {
@@ -346,7 +346,7 @@ export default function Register() {
                 </div>               
                 <div className={styles['work-title']}>{work.title}</div>
                 <div>Place: {work.location}</div>
-                <div>Created by <span className={styles['textstyle']}>{work.organizerN}</span></div>
+                <div>by <span className={styles['textstyle']}>{work.organizerN}</span></div>
                 <div>
                     <div className={styles['ROterm-box2']}>Start Time <div>{formatdate(work.start)}</div> </div>
                 </div>
