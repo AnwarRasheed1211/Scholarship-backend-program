@@ -314,14 +314,13 @@ const formatDate = (dateString) => {
 
 const formatdate = (dateString) => {
   const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, '0'); // Add leading zero if needed
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
-  const year = date.getFullYear();
-  const hours = date.getHours().toString().padStart(2, '0'); // Add leading zero if needed
-  const minutes = date.getMinutes().toString().padStart(2, '0'); // Add leading zero if needed
+  const day = date.getUTCDate().toString().padStart(2, '0'); // Add leading zero if needed
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+  const year = date.getUTCFullYear();
+  const hours = date.getUTCHours().toString().padStart(2, '0'); // Add leading zero if needed
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0'); // Add leading zero if needed
   return `${day}/${month}/${year} - ${hours}:${minutes}`;
 };
-
 
 const filteredWorkS = works
   ? works
@@ -553,7 +552,7 @@ const filteredWorkS = works
               </div>
 
               <div className={styles['work-image']}>
-                  <Image src={selectedWork.picture} width={100} height={50}/>
+                  <Image src={selectedWork.picture} width={100} height={50} />
               </div>
               <h2>Term {selectedWork.semester} </h2>
               <div className={styles['work-scholarship']}>

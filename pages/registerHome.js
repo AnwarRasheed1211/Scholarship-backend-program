@@ -91,13 +91,13 @@ export default function Register() {
 
   const formatdate = (dateString) => {
     const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0'); // Add leading zero if needed
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0'); // Add leading zero if needed
-    const minutes = date.getMinutes().toString().padStart(2, '0'); // Add leading zero if needed
+    const day = date.getUTCDate().toString().padStart(2, '0'); // Add leading zero if needed
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+    const year = date.getUTCFullYear();
+    const hours = date.getUTCHours().toString().padStart(2, '0'); // Add leading zero if needed
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0'); // Add leading zero if needed
     return `${day}/${month}/${year} - ${hours}:${minutes}`;
-  };  
+  };
   
   const filteredWorksByFilters = works
   .filter((work) => {
@@ -346,7 +346,7 @@ export default function Register() {
                 </div>               
                 <div className={styles['work-title']}>{work.title}</div>
                 <div>Place: {work.location}</div>
-                <div>by <span className={styles['textstyle']}>{work.organizerN}</span></div>
+                <div>Created by <span className={styles['textstyle']}>{work.organizerN}</span></div>
                 <div>
                     <div className={styles['ROterm-box2']}>Start Time <div>{formatdate(work.start)}</div> </div>
                 </div>
