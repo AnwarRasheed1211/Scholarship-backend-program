@@ -413,7 +413,7 @@ export default function Home() {
 
                 <div className={styles['details-info']}>
                   <h3>Contact</h3>
-                  <p>{selectedWork.organizer}</p>
+                  <p>{selectedWork.contacts}</p>
                 </div>
               </div>
 
