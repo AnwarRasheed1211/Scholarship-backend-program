@@ -321,10 +321,10 @@ export default function Home() {
                   <div className={styles['work-title']}>{work.title}</div>
                   <div>Place: {work.location}</div>
                   <div className={styles['ROterm-box3']}>
-                    <h3>Start date</h3>
-                    <div className={styles['work-scholarhour']}>{formatdate(work.start)}</div>
+                    <h3>Date and Time</h3>
+                    <div className={styles['work-scholarhour']}>Start: {formatdate(work.start)} End : {formatdate(work.end)}</div>
                     <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours</h4>
-                  </div>
+                </div>
                 </div>
               </div>
             ))

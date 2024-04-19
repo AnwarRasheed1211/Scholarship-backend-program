@@ -348,7 +348,9 @@ export default function Register() {
                 <div>Place: {work.location}</div>
                 <div>Created by <span className={styles['textstyle']}>{work.organizerN}</span></div>
                 <div>
-                    <div className={styles['ROterm-box2']}>Start Time <div>{formatdate(work.start)}</div> </div>
+                    <div className={styles['ROterm-box2']}>
+                    <div className={styles['work-scholarhour']}>Start: {formatdate(work.start)} End: {formatdate(work.end)}</div>
+                    </div> 
                 </div>
               </div>
             </div>
@@ -451,7 +453,7 @@ export default function Register() {
                           </div>
                           <div className={styles['work-scholarship']}>
                           <div className={styles['work-title']}>{work.title}</div>
-                          <div>Place: {work.location} |  Start date: {formatdate(work.start)}</div>
+                          <div>Place: {work.location} |  Start date: {formatdate(work.start)} | End date: {formatdate(work.end)}  | {work.hours} Given Hours</div>
                           <div>Created by <span className={styles['textstyle']}>{work.organizerN}</span></div>
                           </div>
                         </div>

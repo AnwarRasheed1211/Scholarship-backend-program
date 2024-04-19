@@ -536,7 +536,7 @@ const filteredWorkS = works
                 <div>Place: {work.location}</div>
                 <div className={styles['ROterm-box2']}>
                     <h3>Start date</h3>
-                    <div className={styles['work-scholarhour']}>{formatdate(work.start)}</div>
+                    <div className={styles['work-scholarhour']}>Start: {formatdate(work.start)} End : {formatdate(work.end)}</div>
                     <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours</h4>
                 </div>
               </div>
@@ -728,7 +728,7 @@ const filteredWorkS = works
                           </div>
                           <div className={styles['work-scholarship']}>
                           <div className={styles['work-title']}>{work.title}</div>
-                          <div>Place: {work.location} |  Start date: {formatdate(work.start)} | {work.hours} Given Hours</div>
+                          <div>Place: {work.location} |  Start date: {formatdate(work.start)} | End date: {formatdate(work.end)}  | {work.hours} Given Hours</div>
                           </div>
                         </div>
                         <div className={styles['work-status']}>
