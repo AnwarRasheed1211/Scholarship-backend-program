@@ -299,7 +299,7 @@ export default function Home() {
       <div className={styles['home-page']}>
         <div className={styles['works-list']}>
         {filteredWorksByFilters.length === 0 ? (
-            <div className={styles['no-works-message']}>Work with specified hours not available</div>
+            <div className={styles['no-works-message']}>---------- Work not available ----------</div>
           ) : (
             filteredWorksByFilters.map((work) => (
               <div
