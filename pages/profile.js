@@ -131,12 +131,12 @@ export default function Profile() {
                                   <div>{work.title}</div>
                                   <div className={styles['unbold']}>
                                     <ul>
-                                      <li>
+                                      <div>
                                         {formatdate(work.start)} to {formatdate(work.end)}
                                         {work.hours && (
                                           <span> | Scholarship Hours: {work.hours}</span>
                                         )}
-                                      </li>
+                                      </div>
                                     </ul>
                                   </div>
                                 </div>
