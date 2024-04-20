@@ -364,19 +364,7 @@ export default function Home() {
                 <div className={styles['title-container']}>
                     <h3>Student Applicants: {selectedWork.studentList.filter(student => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted').length} of {selectedWork.limit}</h3>
                 </div>
-                <div className={styles['details-info']}> 
-                  <div>
-                    <ol>
-                      {selectedWork.studentList
-                         // Filter out students with status 'Applied'
-                        .map((student, index) => (
-                          <li key={student.id} className={styles['student-entry']}>
-                            {index + 1}. {student.studentName}  ( {student.status} )
-                          </li>
-                        ))}
-                    </ol>
-                  </div>
-                </div>
+                
               </div>
               
 

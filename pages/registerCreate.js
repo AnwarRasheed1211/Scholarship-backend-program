@@ -46,18 +46,14 @@ export default function Create() {
       const endMonth = endDate.getMonth();
     
       // Determine semester based on the month of the start and end dates
-      if ((startMonth >= 10 && startMonth <= 11) || (endMonth >= 0 && endMonth <= 2)) {
-        // November to March
+      if ((startMonth >= 10 && startMonth <= 11) || (endMonth >= 0 && endMonth <= 4)) {
+        // November to May
         const year = startMonth >= 10 ? startDate.getFullYear() : startDate.getFullYear() - 1;
         semester = `2/${year}`;
-      } else if ((startMonth >= 5 && startMonth <= 9) || (endMonth >= 5 && endMonth <= 9)) {
+    } else if ((startMonth >= 5 && startMonth <= 9) || (endMonth >= 5 && endMonth <= 9)) {
         // June to October
-        semester = `1/${startDate.getFullYear()}`;      
-      } else {
-        // Semester not defined
-        const year = startMonth >= 10 ? startDate.getFullYear() : startDate.getFullYear() - 1;
-        semester = `3/${year}`; 
-      }
+        semester = `1/${startDate.getFullYear()}`;
+    }
     } else {
       // Invalid date format
       console.error("Invalid date format");
