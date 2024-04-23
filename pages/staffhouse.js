@@ -543,7 +543,7 @@ const filteredWorkS = works
                 <div className={styles['ROterm-box2']}>
                     <h3>Date & Time</h3>
                     <div className={styles['work-scholarhour']}>Start: {formatdate(work.start)} End : {formatdate(work.end)}</div>
-                    <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours | <Image src="/people.png" alt="Image" width={30} height={30} style={{ verticalAlign: "middle"}}/> {work.studentList.filter(student => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted').length} / {selectedWork.limit}</h4>
+                    <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours | <Image src="/people.png" alt="Image" width={30} height={30} style={{ verticalAlign: "middle"}}/> {work.studentList.filter(student => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted').length} / {work.limit}</h4>
                 </div>
               </div>
             </div>
