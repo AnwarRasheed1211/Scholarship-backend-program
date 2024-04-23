@@ -57,6 +57,11 @@ export default function Home() {
       alert("Work not found");
       return;
     }
+    if (selectedWork.studentList.filter(student => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted').length >= selectedWork.limit) {
+      console.error("Cannot accept more students. Limit reached.");
+      alert("Cannot accept more students. Limit reached.");
+      return;
+    }
   
     // Find the student in the studentList array within the selectedWork
     const acceptedStudent = selectedWork.studentList.find((student) => student._id.toString() === id);
@@ -535,9 +540,9 @@ const filteredWorkS = works
                 <div className={styles['work-title']}>{work.title}</div>
                 <div>Place: {work.location}</div>
                 <div className={styles['ROterm-box2']}>
-                    <h3>Start date</h3>
+                    <h3>Date & Time</h3>
                     <div className={styles['work-scholarhour']}>Start: {formatdate(work.start)} End : {formatdate(work.end)}</div>
-                    <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours</h4>
+                    <h4 className={styles['work-scholarhour']}>{work.hours} Given Hours | <Image src="/people.png" alt="Image" width={30} height={30} style={{ verticalAlign: "middle"}}/> {work.studentList.filter(student => student.status === 'Accepted' || student.status === 'Completed' || student.status === 'Incompleted').length} / {selectedWork.limit}</h4>
                 </div>
               </div>
             </div>

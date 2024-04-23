@@ -180,7 +180,8 @@ export default function Home() {
   .filter((work) => {
     const matchesHours = !hoursFilter || work.hours === parseInt(hoursFilter);
     const matchesStatus = work.workStatus === "Accepted";
-    return matchesHours && matchesStatus;
+    const hasSpaceForStudents = work.studentList.length < work.limit;
+    return matchesHours && matchesStatus && hasSpaceForStudents;;
   })
   .filter((work) => {
     const matchesSemester = !semesterFilter || work.semester === semesterFilter;

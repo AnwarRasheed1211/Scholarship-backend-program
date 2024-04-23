@@ -1025,6 +1025,7 @@
   padding: 5px; /* Adjust the padding as needed */
   border: 1px solid #ccc; /* Add border color */
   border-radius: 5px; /* Add border radius */
+  
 }
 
 .textstyle {
@@ -1101,6 +1102,8 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
+  background-color: white;
+  color: black;
 }
 
 /* Filter button inside the filter box */

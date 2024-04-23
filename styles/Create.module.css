@@ -56,17 +56,19 @@
 .form-button-container input {
   width: 100%;
   margin-top: 20px;
-  background-color: blue;
-  color: white;
+  background-color: white;
+  color: blue;
   border-radius: 50px;
   border: none;
   padding: 12px 20px;
   cursor: pointer;
   transition-duration: 0.4s;
+  border: 1px solid blue;
 }
 
 .form-button-container input:hover {
-  background-color: white; /* Change background color on hover */
+  background-color: blue; /* Change background color on hover */
+  color: white;
 }
 
 .datetime-box {
