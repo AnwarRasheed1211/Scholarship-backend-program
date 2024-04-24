@@ -164,7 +164,8 @@
   border-radius: 5px;
   font-size: 14px;
   transition: border-color 0.3s ease;
-  color: white;
+  background-color: white;
+  color: black;
 }
 
 .semester-filter-input:focus {
