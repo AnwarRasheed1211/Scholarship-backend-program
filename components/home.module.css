@@ -1119,7 +1119,7 @@
   
 }
 
-filter-input:focus {
+.filter-input:focus {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
