@@ -49,8 +49,15 @@
 
 .form-container input:hover,
 .form-container textarea:hover {
-  background-color: lightseagreen; /* Change background color on hover */
+/* Change background color on hover */
   color: black;
+  border: 2px solid blue;
+}
+
+.form-container input:focus,
+.form-container textarea:focus {
+  /* Change background color on focus */
+  background-color: #32de84;
 }
 
 .form-button-container input {

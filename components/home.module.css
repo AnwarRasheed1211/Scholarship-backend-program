@@ -1119,6 +1119,18 @@
   
 }
 
+filter-input:focus {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #32de84;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #D0F0C0;
+  color: black;
+}
+
 /* Filter button inside the filter box */
 .filter-box button {
   background-color: red; /* Green */
